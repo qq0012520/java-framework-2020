@@ -10,10 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import graphql.kickstart.tools.GraphQLResolver;
 import graphql.kickstart.tools.boot.SchemaStringProvider;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Configuration
 public class GraphQLConfig {
 
@@ -23,12 +26,12 @@ public class GraphQLConfig {
     private ApplicationContext applicationContext;
 
     @Autowired
-    private List<GraphQLQueryResolver> queryResolvers;
+    private List<GraphQLResolver<Void>> GraphResolvers;
 
     @Bean
-    public SchemaStringProvider mySchemaProvider() {
-        System.out.println("=====================mySchemaProvider================");
-        printClassNames();
+    SchemaStringProvider mySchemaProvider() {
+        log.info("GraphQL schemas processing...");
+        printReflectiveMethods();
         return new SchemaStringProvider() {
             @Override
             public List<String> schemaStrings() throws IOException {
@@ -43,11 +46,20 @@ public class GraphQLConfig {
         };
     }
 
-    private void printClassNames(){
-        for (GraphQLQueryResolver res : queryResolvers) {
+    private void printReflectiveMethods(){
+        for (GraphQLResolver<Void> res : GraphResolvers) {
+            String className = res.getClass().getSimpleName();
+            String classNameUncap = StringUtils.uncapitalize(className);
             Method[] methods = res.getClass().getMethods();
+            boolean hasReflectiveMethod = false;
             for (Method method : methods) {
-                System.out.println(method);
+                if(classNameUncap.equals(method.getName())){
+                    hasReflectiveMethod = true;
+                    log.info("Checked reflective method : " + method.toString());
+                }
+            }
+            if(!hasReflectiveMethod){
+                log.warn("Reflective method doesn't exists for " + res.getClass().getName());
             }
         }
     }

@@ -19,7 +19,7 @@ import org.springframework.core.io.Resource;
 import graphql.kickstart.tools.boot.SchemaStringProvider;
 
 /**
- * 从类路径获取资源的工具
+ * 从类路径获取 Schema 资源的工具
  */
 public class ClassPathSchemaStringProvider implements SchemaStringProvider {
 

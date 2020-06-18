@@ -8,28 +8,35 @@ import java.util.regex.Pattern;
 import org.springframework.util.StringUtils;
 
 public class GraphQLSchemaMerger {
-    private static String QUERY_BLOCK_START_PART = "type Query{";
-    
-    private static String MUTATION_BLOCK_START_PART = "type Mutation{";
+    private static final String ANY_SPACE_REGEX = "\\s+";
 
-    private static String COMMON_BLOCK_END_PART = "\n}";
+    private static final String QUERY_BLOCK_START_PART = "type " + GraphQLProcessorSuffix.QUERY + "{";
+    
+    private static final String MUTATION_BLOCK_START_PART = "type " + GraphQLProcessorSuffix.MUTATION + "{";
+
+    private static final String COMMON_BLOCK_END_PART = "\n}";
     
     /**
-     * 匹配字符串中类似一下结果字符
+     * 匹配字符串中类似以下结果字符
      * "type someQuery"
      * "type otherQuery"
      */
-    private static Pattern QUERY_NAME_PATTERN = Pattern.compile("type\\s+\\w+Query");
+    private static final Pattern QUERY_NAME_PATTERN = Pattern.compile("type\\s+\\w+" + 
+        GraphQLProcessorSuffix.QUERY);
 
 
      /**
-     * 匹配字符串中类似一下结果字符
+     * 匹配字符串中类似以下结果字符
      * "type someMutation"
      * "type otherMutation"
      */
-    private static Pattern MUTATION_NAME_PATTER = Pattern.compile("type\\s+\\w+Mutation");;
+    private static final Pattern MUTATION_NAME_PATTER = Pattern.compile("type\\s+\\w+" + 
+        GraphQLProcessorSuffix.MUTATION);;
 
-    private static String COMMON_ENTRY_PARAMETER_MODEL = "(id: ID): ";
+    /**
+     * Schema 公共入口方法的通用参数列表
+     */
+    private static final String COMMON_ENTRY_PARAMETER_MODEL = "(id: ID)";
 
     private List<String> schemas;
 
@@ -59,7 +66,7 @@ public class GraphQLSchemaMerger {
         for (String queryEntryName : items) {
             schemaBuilder.append("\n    ");
             schemaBuilder.append(StringUtils.uncapitalize(queryEntryName));
-            schemaBuilder.append(COMMON_ENTRY_PARAMETER_MODEL);
+            schemaBuilder.append(COMMON_ENTRY_PARAMETER_MODEL + ": ");
             schemaBuilder.append(queryEntryName + " ");
         }
         schemaBuilder.append(end);
@@ -81,6 +88,6 @@ public class GraphQLSchemaMerger {
     }
 
     private String extractEntryName(String compond){
-        return compond.split("\\s+")[1];
+        return compond.split(ANY_SPACE_REGEX)[1];
     }
 }

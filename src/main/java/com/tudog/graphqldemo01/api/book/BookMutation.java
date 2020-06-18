@@ -14,7 +14,4 @@ public class BookMutation implements GraphQLMutationResolver{
         return true;
     }
 
-    public BookMutation bookMutation(Integer id){
-        return this;
-    }
 }
