@@ -13,7 +13,7 @@ public class AuthorQuery implements GraphQLQueryResolver{
         return BookQuery.authors.get(0);
     }
 
-    public AuthorQuery authorQuery(Integer id){
-        return this;
-    }
+    // public AuthorQuery authorQuery(Integer id){
+    //     return this;
+    // }
 }

@@ -39,7 +39,7 @@ public class BookQuery implements GraphQLQueryResolver{
         return bookResult;
     }
 
-    public BookQuery bookQuery(Integer id){
-        return this;
-    }
+    // public BookQuery bookQuery(Integer id){
+    //     return this;
+    // }
 }
