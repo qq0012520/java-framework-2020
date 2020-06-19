@@ -1,6 +1,7 @@
 package com.tudog.graphqldemo01.api.book;
 
-import com.tudog.graphqldemo01.entity.BookInput;
+
+import com.tudog.graphqldemo01.model.BookInput;
 
 import org.springframework.stereotype.Component;
 

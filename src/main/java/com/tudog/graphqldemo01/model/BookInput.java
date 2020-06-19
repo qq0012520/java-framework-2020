@@ -1,4 +1,4 @@
-package com.tudog.graphqldemo01.entity;
+package com.tudog.graphqldemo01.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

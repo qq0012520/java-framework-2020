@@ -23,10 +23,12 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.bytecode.ClassFile;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * GraphQL Api 类预处理器，给Api类添加一些通用样板方法
  */
+@Slf4j
 @Component
 public class GraphQLAPIPreprocessor implements ApplicationListener<ApplicationContextInitializedEvent > {
         
@@ -43,20 +45,24 @@ public class GraphQLAPIPreprocessor implements ApplicationListener<ApplicationCo
             String classFileName = file.getName();
             String className = classFileName.substring(0,classFileName.indexOf("."));
             String classNameUncap = StringUtils.uncapitalize(className);
-            try(DataInputStream classInput = new DataInputStream(
-                new BufferedInputStream(new FileInputStream(file)))) {
-                ClassFile classFile = new ClassFile(classInput);
-                String fullClassName = classFile.getName();
-                ClassPool classPool = ClassPool.getDefault();
-                CtClass resolverClass = classPool.get(fullClassName);
-                CtMethod m = CtNewMethod.make("public " + fullClassName + " " + classNameUncap
-                       + "(Integer id){" + "return this;" + "}", resolverClass);
-                resolverClass.addMethod(m);
-                resolverClass.toClass();
-            } catch (Exception e) {
-                //TODO 样板方法添加失败，处理：提示用户，并终止程序（快速失败）
-                e.printStackTrace();
-            }
+            modifyClass(file, classNameUncap);
+        }
+    }
+
+    private void modifyClass(File file, String classNameUncap) {
+        try(DataInputStream classInput = new DataInputStream(
+            new BufferedInputStream(new FileInputStream(file)))) {
+            ClassFile classFile = new ClassFile(classInput);
+            String fullClassName = classFile.getName();
+            ClassPool classPool = ClassPool.getDefault();
+            CtClass resolverClass = classPool.get(fullClassName);
+            CtMethod m = CtNewMethod.make("public " + fullClassName + " " + classNameUncap
+                   + "(Integer id){" + "return this;" + "}", resolverClass);
+            resolverClass.addMethod(m);
+            resolverClass.toClass();
+        } catch (Exception e) {
+            log.error("Error with creating boilerplate methods. Error message : " + e.getMessage());
+            System.exit(1);
         }
     }
 
