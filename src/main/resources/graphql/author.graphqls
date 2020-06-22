@@ -2,6 +2,10 @@ type AuthorQuery{
     authorById(id: ID): Author
 }
 
+type AuthorMutation{
+    addAuthor(input: AuthorInput): Author
+}
+
 type Author{
     id: ID
     firstName: String

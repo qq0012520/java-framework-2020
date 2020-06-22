@@ -3,7 +3,7 @@ type BookQuery{
 }
 
 type BookMutation{
-    addBook(input: BookInput): Boolean
+    addBook(input: BookInput): Book
 }
 
 type Book{
@@ -11,7 +11,6 @@ type Book{
     name: String
     pageCount: Int
     author: Author
-    authorId: Int
 }
 
 input BookInput{

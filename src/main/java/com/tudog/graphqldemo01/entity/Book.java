@@ -1,7 +1,11 @@
 package com.tudog.graphqldemo01.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
+import com.tudog.graphqldemo01.entity.base.BaseEntity;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,18 +13,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-public class Book{
-    private Integer id;
+@AllArgsConstructor
+public class Book extends BaseEntity{
     private String name;
     private Integer pageCount;
-    private Integer authorId;
+    
+    @ManyToOne
     private Author author;
-
-    public Book(Integer id, String name, Integer pageCount, Integer authorId) {
-        this.id = id;
-        this.name = name;
-        this.pageCount = pageCount;
-        this.authorId = authorId;
-    }
-
 }

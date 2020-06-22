@@ -6,14 +6,15 @@ import com.tudog.graphqldemo01.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import graphql.kickstart.tools.GraphQLMutationResolver;
 
 @Component
-public class AuthorQuery implements GraphQLQueryResolver{
+public class AuthorMutation implements GraphQLMutationResolver{
+
     @Autowired
     private AuthorRepository authorRepository;
 
-    public Author authorById(Long id){
-        return authorRepository.findById(id).get();
+    public Author addAuthor(AuthorInput input){
+        return authorRepository.save(author);
     }
 }

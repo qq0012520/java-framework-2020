@@ -1,11 +1,11 @@
 # java-framework-2020
 Java web framework with all the new techs and features in 2020
 
-## Spring Data Repository 使用实例
+## Spring Data 通用使用实例
 
-### 方法名推断查询：
+## 方法名推断查询：
 
-#### 一些示例
+### 一些示例
 ```
 List<Person> findByEmailAddressAndLastname(EmailAddress emailAddress, String lastname);
 
@@ -23,7 +23,7 @@ List<Person> findByLastnameOrderByFirstnameAsc(String lastname);
 List<Person> findByLastnameOrderByFirstnameDesc(String lastname);
   ```
 
-#### 属性表达式
+### 属性表达式
 
 针对如下查询：   
 
@@ -38,7 +38,7 @@ List<Person> findByLastnameOrderByFirstnameDesc(String lastname);
 
 `List<Person> findByAddress_ZipCode(ZipCode zipCode);`
 
-#### 分页、排序处理
+### 分页、排序处理
 可以项查询中传入 Pageable 和 Sort 对象来作为分页和排序参数。
 ```
 Page<User> findByLastname(String lastname, Pageable pageable);
@@ -55,5 +55,286 @@ List<User> findByLastname(String lastname, Pageable pageable);
 
 排序也可通过Pageable来达成。如果仅仅是需要排序功能，那可以使用Sort对象。
 
-更多Spring Data API的使用请参考官方文档，如以下地址
+## Spring Data JPA相关
+### 方法名称推断SQL查询关键字SQL映射表
+|Keyword|Sample|JPQL snippet|
+|----|----|----|
+|`And`|`findByLastnameAndFirstname`|`… where x.lastname = ?1 and x.firstname = ?2`|   
+|`Or`|`findByLastnameOrFirstname`|`… where x.lastname = ?1 or x.firstname = ?2`|
+|`Is, Equals`|`findByFirstname,findByFirstnameIs,findByFirstnameEquals`|`… where x.firstname = ?1`|
+|`Between`|`findByStartDateBetween`|`… where x.startDate between ?1 and ?2`|
+|`LessThan`|`findByAgeLessThan`|`… where x.age < ?1`|
+|`LessThanEqual`|`findByAgeLessThanEqual`|`… where x.age <= ?1`|
+|`GreaterThan`|`findByAgeGreaterThan`|`… where x.age > ?1`|
+|`GreaterThanEqual`|`findByAgeGreaterThanEqual`|`… where x.age >= ?1`|
+|`After`|`findByStartDateAfter`|`… where x.startDate > ?1`|
+|`Before`|`findByStartDateBefore`|`… where x.startDate < ?1`|
+|`IsNull, Null`|`findByAge(Is)Null`|`… where x.age is null`|
+|`IsNotNull, NotNull`|`findByAge(Is)NotNull`|`… where x.age not null`|
+|`Like`|`findByFirstnameLike`|`… where x.firstname like ?1`|
+|`NotLike`|`findByFirstnameNotLike`|`… where x.firstname not like ?1`|
+|`StartingWith`|`findByFirstnameStartingWith`|`… where x.firstname like ?1 (会在参数后面追加 %)`|
+|`EndingWith`|`findByFirstnameEndingWith`|`… where x.firstname like ?1 (会在参数前面追加 %)`|
+|`Containing`|`findByFirstnameContaining`|`… where x.firstname like ?1 (会在参数前后追加 %)`|
+|`OrderBy`|`findByAgeOrderByLastnameDesc`|`… where x.age = ?1 order by x.lastname desc`|
+|`Not`|`findByLastnameNot`|`… where x.lastname <> ?1`|
+|`In`|`findByAgeIn(Collection<Age> ages)`|`… where x.age in ?1`|
+|`NotIn`|`findByAgeNotIn(Collection<Age> ages)`|`… where x.age not in ?1`|
+|`True`|`findByActiveTrue()`|`… where x.active = true`|
+|`False`|`findByActiveFalse()`|`… where x.active = false`|
+|`IgnoreCase`|`findByFirstnameIgnoreCase`|`… where UPPER(x.firstame) = UPPER(?1)`|
+
+***Tip: In 和 Not 关键字可接收任何 Collection 的子类、数组和可变参数作为入参。***
+
+### 使用 @Query 自定义查询
+示例：在查询方法上定义查询语句(JPQL)
+```
+public interface UserRepository extends JpaRepository<User, Long> {
+
+  @Query("select u from User u where u.emailAddress = ?1")
+  User findByEmailAddress(String emailAddress);
+}
+```
+示例：使用like关键字
+```
+public interface UserRepository extends JpaRepository<User, Long> {
+
+  @Query("select u from User u where u.firstname like %?1")
+  List<User> findByFirstnameEndsWith(String firstname);
+}
+```
+示例：使用本地查询
+```
+public interface UserRepository extends JpaRepository<User, Long> {
+
+  @Query(value = "SELECT * FROM USERS WHERE EMAIL_ADDRESS = ?1", nativeQuery = true)
+  User findByEmailAddress(String emailAddress);
+}
+```
+***Tip:DATA JPA 目前并不支持原生SQL的动态排序功能。但可以使用原生SQL的动态分页功能，只需要在多传入 count 语句就可以。***   
+示例：在原生查询中使用count语句来分页
+```
+public interface UserRepository extends JpaRepository<User, Long> {
+
+  @Query(value = "SELECT * FROM USERS WHERE LASTNAME = ?1",
+    countQuery = "SELECT count(*) FROM USERS WHERE LASTNAME = ?1",
+    nativeQuery = true)
+  Page<User> findByLastname(String lastname, Pageable pageable);
+}
+```   
+示例：使用Sort和JpaSort
+
+```
+public interface UserRepository extends JpaRepository<User, Long> {
+
+  @Query("select u from User u where u.lastname like ?1%")
+  List<User> findByAndSort(String lastname, Sort sort);
+
+  @Query("select u.id, LENGTH(u.firstname) as fn_len from User u where u.lastname like ?1%")
+  List<Object[]> findByAsArrayAndSort(String lastname, Sort sort);
+}
+
+repo.findByAndSort("lannister", new Sort("firstname"));                               
+repo.findByAndSort("stark", new Sort("LENGTH(firstname)"));                
+repo.findByAndSort("targaryen", JpaSort.unsafe("LENGTH(firstname)"));    
+repo.findByAsArrayAndSort("bolton", new Sort("fn_len"));               
+```
+**默认情况下Data JPA 不能在Order中调用函数，可以使用 `JpaSort.unsafe` 来调用函数**
+
+示例：使用命名参数
+```
+public interface UserRepository extends JpaRepository<User, Long> {
+
+  @Query("select u from User u where u.firstname = :firstname or u.lastname = :lastname")
+  User findByLastnameOrFirstname(@Param("lastname") String lastname,
+                                 @Param("firstname") String firstname);
+}
+```
+
+### 提取实体关联数据
+&emsp;&emsp;默认情况下 Data JPA 使用懒加载关联实体数据，如果需要立即加载实体数据。可以是用命名视图或者临时视图来指定要加载的关联数据。   
+示例：   
+（1）定义命名视图
+```
+@Entity
+@NamedEntityGraph(name = "GroupInfo.detail",
+  attributeNodes = @NamedAttributeNode("members"))
+public class GroupInfo {
+
+  // default fetch mode is lazy.
+  @ManyToMany
+  List<GroupMember> members = new ArrayList<GroupMember>();
+
+  …
+}
+```
+(2) 在查询中使用命名视图
+```
+@Repository
+public interface GroupRepository extends CrudRepository<GroupInfo, String> {
+
+  @EntityGraph(value = "GroupInfo.detail", type = EntityGraphType.LOAD)
+  GroupInfo getByGroupName(String name);
+
+}
+```   
+&emsp;&emsp;通过在临时视图中指定属性名称来提取数据  
+(3) 使用临时视图来提取数据
+```
+@Repository
+public interface GroupRepository extends CrudRepository<GroupInfo, String> {
+
+  @EntityGraph(attributePaths = { "members" })
+  GroupInfo getByGroupName(String name);
+
+}
+```
+
+### 投影查询
+&emsp;&emsp;有时候我们只需要查询实体中的一部分字段，我们可以使用投影查询来优化查询效率。   
+
+#### 基于接口的投影查询
+
+示例：  
+（1）定义一个数据对象和仓库
+```
+class Person {
+
+  @Id UUID id;
+  String firstname, lastname;
+  Address address;
+
+  static class Address {
+    String zipCode, city, street;
+  }
+}
+
+interface PersonRepository extends Repository<Person, UUID> {
+
+  Collection<Person> findByLastname(String lastname);
+}
+```
+（2）使用基于接口的投影查询
+```
+interface NamesOnly {
+
+  String getFirstname();
+  String getLastname();
+}
+```
+```
+interface PersonRepository extends Repository<Person, UUID> {
+
+  Collection<NamesOnly> findByLastname(String lastname);
+}
+```
+&emsp;&emsp;对于上面的示例，查询执行引擎会在运行时创建接口的代理。
+
+（3）投影接口提取子属性
+```
+interface PersonSummary {
+
+  String getFirstname();
+  String getLastname();
+  AddressSummary getAddress();
+
+  interface AddressSummary {
+    String getCity();
+  }
+}
+```
+
+#### 基于类的投影查询（DTO对象）
+示例：  
+（1）定义一个DTO对象
+```
+class NamesOnly {
+
+  private final String firstname, lastname;
+
+  NamesOnly(String firstname, String lastname) {
+
+    this.firstname = firstname;
+    this.lastname = lastname;
+  }
+
+  String getFirstname() {
+    return this.firstname;
+  }
+
+  String getLastname() {
+    return this.lastname;
+  }
+
+  // equals(…) and hashCode() implementations
+}
+```
+&emsp;&emsp;可以使用Project Lombok 来简化类的定义，使用下面的定义等同与上面的定义
+```
+@Value
+class NamesOnly {
+	String firstname, lastname;
+}
+```
+
+#### 动态投影
+&emsp;&emsp;可以在运行时传递类型的方式来动态的定义查询的返回类型   
+示例：    
+（1）使用动态投影查询
+```
+interface PersonRepository extends Repository<Person, UUID> {
+
+  <T> Collection<T> findByLastname(String lastname, Class<T> type);
+}
+```
+```
+void someMethod(PersonRepository people) {
+
+  Collection<Person> aggregates =
+    people.findByLastname("Matthews", Person.class);
+
+  Collection<NamesOnly> aggregates =
+    people.findByLastname("Matthews", NamesOnly.class);
+}
+```
+
+### 事务
+&emsp;&emsp; 默认情况下，repository 实例的 CRUD 方法会使用事务。对于所有读取的操作会使用 @Transactional(readOnly=true)；其它操作会使用 @Transactional。
+
+&emsp;&emsp;我们很多时候都会在服务层使用事务，来跨越多个repository。
+可以通过该如下方式来使用 service 层事务。  
+（1）首先开启基于注解的事务配置：在配置类上注解 @EnableTransactionManagement    
+（2）在 service 类中使用事务注解：  
+```
+@Service
+class UserManagementImpl implements UserManagement {
+
+  private final UserRepository userRepository;
+  private final RoleRepository roleRepository;
+
+  @Autowired
+  public UserManagementImpl(UserRepository userRepository,
+    RoleRepository roleRepository) {
+    this.userRepository = userRepository;
+    this.roleRepository = roleRepository;
+  }
+
+  @Transactional
+  public void addRoleToAllUsers(String roleName) {
+
+    Role role = roleRepository.findByName(roleName);
+
+    for (User user : userRepository.findAll()) {
+      user.addRole(role);
+      userRepository.save(user);
+    }
+}
+```
+
+***Tip:对与只读查询，使用 readOnly 标记可以优化查询效率。比如在使用Hibernate的情况下，readOnly会避免使用脏检查，从而优化大对象树的查询***
+
+
+
+### 更多
+&emsp;&emsp;更多Spring Data API的使用请参考官方文档，如以下地址
 `https://docs.spring.io/spring-data/jpa/docs/2.3.1.RELEASE/reference/html/#repositories.special-parameters`
