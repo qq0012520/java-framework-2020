@@ -5,6 +5,7 @@ import com.tudog.graphqldemo01.repository.AuthorRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import graphql.kickstart.tools.GraphQLMutationResolver;
 
@@ -14,7 +15,9 @@ public class AuthorMutation implements GraphQLMutationResolver{
     @Autowired
     private AuthorRepository authorRepository;
 
-    public Author addAuthor(AuthorInput input){
+
+    @Transactional
+    public Author addAuthor(Author author){
         return authorRepository.save(author);
     }
 }

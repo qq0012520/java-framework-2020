@@ -10,4 +10,11 @@ type Author{
     id: ID
     firstName: String
     lastName: String
+    books: [Book]
+}
+
+input AuthorInput{
+    id: ID
+    firstName: String
+    lastName: String
 }

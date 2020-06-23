@@ -2,6 +2,7 @@ package com.tudog.graphqldemo01.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import com.tudog.graphqldemo01.entity.base.BaseEntity;
 
@@ -17,6 +18,9 @@ import lombok.NoArgsConstructor;
 public class Book extends BaseEntity{
     private String name;
     private Integer pageCount;
+
+    @Transient
+    private Long authorId;
     
     @ManyToOne
     private Author author;
