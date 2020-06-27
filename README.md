@@ -1,7 +1,7 @@
 # java-framework-2020
 Java web framework with all the new techs and features in 2020
 
-## Spring Data 通用使用实例
+# Spring Data 相关
 
 ## 方法名推断查询：
 
@@ -338,3 +338,57 @@ class UserManagementImpl implements UserManagement {
 ### 更多
 &emsp;&emsp;更多Spring Data API的使用请参考官方文档，如以下地址
 `https://docs.spring.io/spring-data/jpa/docs/2.3.1.RELEASE/reference/html/#repositories.special-parameters`
+
+
+# Spring Security 相关
+## Spring Security 登录认证
+Spring Security 中的表单登录认证需要提供：  
+1.一个用于登录的表单  
+2.一个登录控制器(Controller)
+
+### 1.登录表单
+
+代码示例：登表单login.html
+```
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+    <head>
+        <title>Please Log In</title>
+    </head>
+    <body>
+        <h1>Please Log In</h1>
+        <div th:if="${param.error}">
+            Invalid username and password.</div>
+        <div th:if="${param.logout}">
+            You have been logged out.</div>
+        <form th:action="@{/login}" method="post">
+            <div>
+            <input type="text" name="username" placeholder="Username"/>
+            </div>
+            <div>
+            <input type="password" name="password" placeholder="Password"/>
+            </div>
+            <input type="submit" value="Log in" />
+        </form>
+    </body>
+</html>
+``` 
+默认的登录表单有如下几个要求：
+* 表单应提交post请求到 /login
+* 表单中需要包含一个 CSRF Token
+* 表单中需要指定一个用户名作为参数，参数名称为 `username`
+* 表单中需要指定一个密码作为参数，参数名称为 `password`
+* 如果HTTP参数 error 存在，表单中需提示用户输入有效的用户名和密码
+* 如果HTTP参数 logout 存在，表单中需提示用户登出成功
+
+### 2.登录表单
+示例代码：LoginController.java
+```
+@Controller
+class LoginController {
+    @GetMapping("/login")
+    String login() {
+        return "login";
+    }
+}
+```
