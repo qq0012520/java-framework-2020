@@ -18,7 +18,7 @@ public class BookQuery implements GraphQLQueryResolver{
 
     @Transactional(readOnly = true)
     public Book bookById(Long id){
-        return bookRepository.findById(id).get();
+        return bookRepository.findById(id).orElse(null);
     }
 
 }

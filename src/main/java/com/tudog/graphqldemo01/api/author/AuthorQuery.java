@@ -17,13 +17,12 @@ public class AuthorQuery implements GraphQLQueryResolver{
     private AuthorRepository authorRepository;
 
     @Transactional(readOnly=true)
-    public Author authorById(Long id,DataFetchingEnvironment env){
+    public Author authorById(Long id, DataFetchingEnvironment env){
         DataFetchingFieldSelectionSet selectionSet = env.getSelectionSet();
         if(selectionSet.contains("books")){
-            System.out.println("test11111");
+            return authorRepository.getById(id);
         }else{
-            System.out.println("test22222");
+            return authorRepository.findById(id).orElse(null);
         }
-        return authorRepository.findById(id).orElse(null);
     }
 }
