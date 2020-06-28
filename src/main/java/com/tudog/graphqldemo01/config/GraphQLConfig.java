@@ -49,6 +49,9 @@ public class GraphQLConfig {
     private void printReflectiveMethods(){
         for (GraphQLResolver<Void> res : GraphResolvers) {
             String className = res.getClass().getSimpleName();
+            if(className.contains("$")){ //过滤掉CGLIB增强类后缀
+                className = className.substring(0,className.indexOf("$"));
+            }
             String classNameUncap = StringUtils.uncapitalize(className);
             Method[] methods = res.getClass().getMethods();
             boolean hasReflectiveMethod = false;
