@@ -1,5 +1,7 @@
 type AuthorQuery{
     authorById(id: ID): Author
+    listAuthor: [Author]
+    pageAuthor(page: Int,size: Int): Page
 }
 
 type AuthorMutation{
@@ -17,4 +19,12 @@ input AuthorInput{
     id: ID
     firstName: String
     lastName: String
+}
+
+type Page{
+    totalElements: Int
+    totalPages: Int
+    number: Int
+    size: Int
+    content: [Author]
 }

@@ -331,7 +331,7 @@ class UserManagementImpl implements UserManagement {
 }
 ```
 
-***Tip:对与只读查询，使用 readOnly 标记可以优化查询效率。比如在使用Hibernate的情况下，readOnly会避免使用脏检查，从而优化大对象树的查询***
+***Tip:对于只读查询，使用 readOnly 标记可以优化查询效率。比如在使用Hibernate的情况下，readOnly会避免使用脏检查，从而优化大对象树的查询***
 
 
 
@@ -381,7 +381,7 @@ Spring Security 中的表单登录认证需要提供：
 * 如果HTTP参数 error 存在，表单中需提示用户输入有效的用户名和密码
 * 如果HTTP参数 logout 存在，表单中需提示用户登出成功
 
-### 2.登录表单
+### 2.登录控制器
 示例代码：LoginController.java
 ```
 @Controller

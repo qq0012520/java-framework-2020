@@ -51,7 +51,7 @@ public class GraphQLSchemaMerger {
     }
 
     /**
-     * 通过现有的schema来创建跟（root）schema，根schema主要包含Query和Mutation根元素
+     * 通过现有的schema来创建根（root）schema，根schema主要包含Query和Mutation根元素
      */
     String makeRootSchema(){
         extractEntryNames();
