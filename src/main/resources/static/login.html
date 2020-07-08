@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+    <head>
+        <title>Please Log In</title>
+        <script type="text/javascript"> 
+            window.onload=function(){ 
+                let csrfToken = getCookie("XSRF-TOKEN");
+                var input = document.getElementById("csrf_token");
+                input.value = csrfToken;
+                function getCookie(cname)
+                {
+                    var name = cname + "=";
+                    var ca = document.cookie.split(';');
+                    for(var i=0; i<ca.length; i++) 
+                    {
+                        var c = ca[i].trim();
+                        if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+                    }
+                    return "";
+                } 
+            } 
+        </script>
+    </head>
+    <body>
+        <h1>Please Log In</h1>
+        <div th:if="${param.error}">
+            Invalid username and password.</div>
+        <div th:if="${param.logout}">
+            You have been logged out.</div>
+        <form th:action="@{/login}" method="post">
+            <input type="hidden"
+            id="csrf_token"
+            name="_csrf"
+            value=""/>
+            <div>
+            <input type="text" name="username" placeholder="Username"/>
+            </div>
+            <div>
+            <input type="password" name="password" placeholder="Password"/>
+            </div>
+            <input type="submit" value="Log in" />
+        </form>
+    </body>
+</html>

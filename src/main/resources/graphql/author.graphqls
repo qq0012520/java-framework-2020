@@ -1,5 +1,6 @@
 type AuthorQuery{
-    authorById(id: ID): Author
+    authorById(id: ID !): Author
+    findByFirstName(firstName: String): Author
     listAuthor: [Author]
     pageAuthor(page: Int,size: Int): Page
 }
@@ -9,7 +10,7 @@ type AuthorMutation{
 }
 
 type Author{
-    id: ID
+    id: ID !
     firstName: String
     lastName: String
     books: [Book]
@@ -17,8 +18,8 @@ type Author{
 
 input AuthorInput{
     id: ID
-    firstName: String
-    lastName: String
+    firstName: String !
+    lastName: String !
 }
 
 type Page{
