@@ -1,6 +1,5 @@
 package com.tudog.graphqldemo01.entity.base;
 
-
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -11,13 +10,14 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import graphql.schema.GraphQLInputType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @EqualsAndHashCode
 @MappedSuperclass
-public abstract class BaseEntity {
+public abstract class BaseEntity{
     @Getter
     @Setter
     @Id

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.DataFetchingFieldSelectionSet;
@@ -34,7 +35,7 @@ import graphql.schema.DataFetchingFieldSelectionSet;
 public abstract class BaseService<T, ID extends Serializable> {
     protected EntityGraphJpaRepository<T, ID> baseRepository;
 
-    //保存实体类的用于查询提取的属性名称
+    //保存实体类用于查询（lazy）属性名称
     private List<String> graphAttributeNames = new ArrayList<>();
 
     @Autowired
@@ -58,6 +59,11 @@ public abstract class BaseService<T, ID extends Serializable> {
         }
     }
 
+    /**
+     * Extract Entity Graph Attributes from GraphQL's DataFechingEnvironment
+     * @param env
+     * @return
+     */
     protected EntityGraph extractedGraphAttributes(DataFetchingEnvironment env) {
         DataFetchingFieldSelectionSet selectionSet = env.getSelectionSet();
 
@@ -74,25 +80,206 @@ public abstract class BaseService<T, ID extends Serializable> {
         return entityGraph;
     }
 
+    /**
+	 * Retrieves an entity by its id with graph attributes.
+	 *
+	 * @param id must not be {@literal null}.
+	 * @return the entity with the given id or {@literal Optional#empty()} if none found.
+	 * @throws IllegalArgumentException if {@literal id} is {@literal null}.
+	 */
     public T findById(ID id,DataFetchingEnvironment env){
         EntityGraph graphEntity = extractedGraphAttributes(env);
         return baseRepository.findById(id,graphEntity).orElse(null);
     }
 
+    /**
+	 * Retrieves an entity by its id.
+	 *
+	 * @param id must not be {@literal null}.
+	 * @return the entity with the given id or {@literal Optional#empty()} if none found.
+	 * @throws IllegalArgumentException if {@literal id} is {@literal null}.
+	 */
+    public T findById(ID id){
+        return baseRepository.findById(id).orElse(null);
+    }
+
+    /**
+	 * Returns a {@link Page} of entities meeting the paging restriction provided in the {@code Pageable} object
+	 * with graph attributes
+	 * @param pageable
+	 * @return a page of entities
+	 */
     public Page<T> findAll(int page,int size,DataFetchingEnvironment env){
         EntityGraph graphEntity = extractedGraphAttributes(env);
         return baseRepository.findAll(PageRequest.of(page, size), graphEntity);
     }
 
+    /**
+	 * Returns a {@link Page} of entities meeting the paging restriction provided in the {@code Pageable} object
+	 * with graph attributes.
+	 * @param pageable
+	 * @return a page of entities
+	 */
     public Page<T> findAll(Pageable pageable,DataFetchingEnvironment env){
         EntityGraph graphEntity = extractedGraphAttributes(env);
         return baseRepository.findAll(pageable, graphEntity);
     }
 
+    /**
+	 * Returns all instances of the type with graph attributes.
+	 *
+	 * @return all entities
+	 */
     public List<T> findAll(DataFetchingEnvironment env){
         EntityGraph graphEntity = extractedGraphAttributes(env);
         return (List<T>)baseRepository.findAll(graphEntity);
     }
 
+    
+    /**
+	 * Returns all entities sorted by the given options with graph attributes.
+	 *
+	 * @param sort
+	 * @return all entities sorted by the given options
+	 */
+    public List<T> findAll(Sort sort,DataFetchingEnvironment env){
+        EntityGraph graphEntity = extractedGraphAttributes(env);
+        return (List<T>) baseRepository.findAll(sort, graphEntity);
+    }
+
+    /**
+	 * Returns all entities sorted by the given options.
+	 *
+	 * @param sort
+	 * @return all entities sorted by the given options
+	 */
+    public List<T> findAll(Sort sort){
+        return baseRepository.findAll(sort);
+    }
+
+    /**
+	 * Returns all instances of the type {@code T} with the given IDs.
+	 * <p>
+	 * If some or all ids are not found, no entities are returned for these IDs.
+	 * <p>
+	 * Note that the order of elements in the result is not guaranteed.
+	 *
+	 * @param ids must not be {@literal null} nor contain any {@literal null} values.
+	 * @return guaranteed to be not {@literal null}. The size can be equal or less than the number of given
+	 *         {@literal ids}.
+	 * @throws IllegalArgumentException in case the given {@link Iterable ids} or one of its items is {@literal null}.
+	 */
+    public List<T> findAllById(List<ID> ids){
+        return baseRepository.findAllById(ids);
+    }
+
+    /**
+	 * Returns all instances of the type {@code T} with the given IDs and graph attributes.
+	 * <p>
+	 * If some or all ids are not found, no entities are returned for these IDs.
+	 * <p>
+	 * Note that the order of elements in the result is not guaranteed.
+	 *
+	 * @param ids must not be {@literal null} nor contain any {@literal null} values.
+	 * @return guaranteed to be not {@literal null}. The size can be equal or less than the number of given
+	 *         {@literal ids}.
+	 * @throws IllegalArgumentException in case the given {@link Iterable ids} or one of its items is {@literal null}.
+	 */
+    public List<T> findAllById(List<ID> ids,DataFetchingEnvironment env){
+        EntityGraph graphEntity = extractedGraphAttributes(env);
+        return (List<T>) baseRepository.findAllById(ids, graphEntity);
+    }
+
+    /**
+	 * Saves a given entity. Use the returned instance for further operations as the save operation might have changed the
+	 * entity instance completely.
+	 *
+	 * @param entity must not be {@literal null}.
+	 * @return the saved entity; will never be {@literal null}.
+	 * @throws IllegalArgumentException in case the given {@literal entity} is {@literal null}.
+	 */
+    public T save(T entity){
+        return baseRepository.save(entity);
+    }
+
+    /**
+	 * Deletes a given entity.
+	 *
+	 * @param entity must not be {@literal null}.
+	 * @throws IllegalArgumentException in case the given entity is {@literal null}.
+	 */
+    public void delete(T entity){
+        baseRepository.delete(entity);
+    }
+
+    /**
+	 * Returns the number of entities available.
+	 *
+	 * @return the number of entities.
+	 */
+    public long count(){
+        return baseRepository.count();
+    }
+
+    /**
+	 * Deletes the entity with the given id.
+	 *
+	 * @param id must not be {@literal null}.
+	 * @throws IllegalArgumentException in case the given {@literal id} is {@literal null}
+	 */
+    public void deleteById(ID id){
+        baseRepository.deleteById(id);
+    }
+
+    /**
+	 * Returns whether an entity with the given id exists.
+	 *
+	 * @param id must not be {@literal null}.
+	 * @return {@literal true} if an entity with the given id exists, {@literal false} otherwise.
+	 * @throws IllegalArgumentException if {@literal id} is {@literal null}.
+	 */
+    public boolean existsById(ID id){
+        return baseRepository.existsById(id);
+    }
+
+    /**
+	 * Flushes all pending changes to the database.
+	 */
+    public void flush(){
+        baseRepository.flush();
+    }
+
+    /**
+	 * Saves an entity and flushes changes instantly.
+	 *
+	 * @param entity
+	 * @return the saved entity
+	 */
+    public T saveAndFlush(T entity){
+        return baseRepository.saveAndFlush(entity);
+    }
+
+    /**
+	 * Saves all given entities.
+	 *
+	 * @param entities must not be {@literal null} nor must it contain {@literal null}.
+	 * @return the saved entities; will never be {@literal null}. The returned {@literal Iterable} will have the same size
+	 *         as the {@literal Iterable} passed as an argument.
+	 * @throws IllegalArgumentException in case the given {@link Iterable entities} or one of its entities is
+	 *           {@literal null}.
+	 */
+    public List<T> saveAll(Iterable<T> entities) {
+        return baseRepository.saveAll(entities);
+    }
+
+    /**
+	 * Deletes the given entities in a batch which means it will create a single {@link Query}. Assume that we will clear
+	 * the {@link javax.persistence.EntityManager} after the call.
+	 *
+	 * @param entities
+	 */
+    public void deleteInBatch(Iterable<T> entities){
+        baseRepository.deleteInBatch(entities);
+    }
    
 }

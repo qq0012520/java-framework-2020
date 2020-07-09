@@ -1,14 +1,11 @@
 package com.tudog.graphqldemo01.api.book;
 
 
-import com.tudog.graphqldemo01.entity.Author;
 import com.tudog.graphqldemo01.entity.Book;
-import com.tudog.graphqldemo01.repository.AuthorRepository;
-import com.tudog.graphqldemo01.repository.BookRepository;
+import com.tudog.graphqldemo01.service.BookService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import graphql.kickstart.tools.GraphQLMutationResolver;
 
@@ -16,16 +13,19 @@ import graphql.kickstart.tools.GraphQLMutationResolver;
 public class BookMutation implements GraphQLMutationResolver{
     
     @Autowired
-    private BookRepository bookRepository;
+    private BookService bookService;
 
-    @Autowired
-    private AuthorRepository authorRepository;
-   
-    @Transactional
     public Book addBook(Book book){
-        Author author = authorRepository.findById(book.getAuthorId()).get();
-        book.setAuthor(author);
-        return bookRepository.save(book);
+        return bookService.addBook(book);
+    }
+
+    public Book updateBook(Book book){
+        return bookService.save(book);
+    }
+
+    public boolean deleteBook(Long id){
+        bookService.deleteById(id);
+        return true;
     }
 
 }
