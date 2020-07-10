@@ -34,15 +34,15 @@ public class GraphQLConfig {
         printReflectiveMethods();
         return new SchemaStringProvider() {
             @Override
-            public List<String> schemaStrings() throws IOException {
-                SchemaStringProvider classpathSchemaProvider = new ClassPathSchemaStringProvider(applicationContext,
-                        schemaLocationPattern);
-                List<String> schemas = classpathSchemaProvider.schemaStrings();
-                GraphQLSchemaMerger merger = new GraphQLSchemaMerger(schemas);
-                String rootSchema = merger.makeRootSchema();
-                schemas.add(rootSchema);
-                return schemas;
-            }
+                public List<String> schemaStrings() throws IOException {
+                    SchemaStringProvider classpathSchemaProvider = new ClassPathSchemaStringProvider(applicationContext,
+                            schemaLocationPattern);
+                    List<String> schemas = classpathSchemaProvider.schemaStrings();
+                    GraphQLSchemaMerger merger = new GraphQLSchemaMerger(schemas);
+                    String rootSchema = merger.makeRootSchema();
+                    schemas.add(rootSchema);
+                    return schemas;
+                }
         };
     }
 
