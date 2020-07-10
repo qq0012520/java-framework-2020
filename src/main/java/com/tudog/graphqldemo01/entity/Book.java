@@ -6,10 +6,6 @@ import javax.persistence.Transient;
 
 import com.tudog.graphqldemo01.entity.base.BaseEntity;
 
-import graphql.schema.GraphQLSchemaElement;
-import graphql.schema.GraphQLTypeVisitor;
-import graphql.util.TraversalControl;
-import graphql.util.TraverserContext;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

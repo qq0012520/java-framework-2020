@@ -1,12 +1,16 @@
 type AuthorQuery{
     authorById(id: ID !): Author
-    findByFirstName(firstName: String): Author
+    findByFirstName(firstName: String): [Author]
     listAuthor: [Author]
     pageAuthor(page: Int,size: Int): Page
 }
 
 type AuthorMutation{
     addAuthor(input: AuthorInput): Author
+}
+
+type Subscription {
+  hello: Int
 }
 
 type Author{

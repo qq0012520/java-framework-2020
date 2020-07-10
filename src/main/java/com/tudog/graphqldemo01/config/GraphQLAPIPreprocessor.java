@@ -56,10 +56,15 @@ public class GraphQLAPIPreprocessor implements ApplicationListener<ApplicationCo
             String fullClassName = classFile.getName();
             ClassPool classPool = ClassPool.getDefault();
             CtClass resolverClass = classPool.get(fullClassName);
-            CtMethod m = CtNewMethod.make("public " + fullClassName + " " + classNameUncap
+            try{
+                resolverClass.getDeclaredMethod(classNameUncap);
+            }catch(javassist.NotFoundException e){
+                CtMethod newMethod = CtNewMethod.make("public " + fullClassName + " " + classNameUncap
                    + "(Integer id){" + "return this;" + "}", resolverClass);
-            resolverClass.addMethod(m);
-            resolverClass.toClass();
+                resolverClass.addMethod(newMethod);
+                resolverClass.toClass();
+            }
+            log.info("Skip creating boilerplate method. There's already a method named " + classNameUncap);
         } catch (Exception e) {
             log.error("Error with creating boilerplate methods. Error message : " + e.getMessage());
             System.exit(1);

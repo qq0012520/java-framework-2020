@@ -10,7 +10,6 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import graphql.schema.GraphQLInputType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

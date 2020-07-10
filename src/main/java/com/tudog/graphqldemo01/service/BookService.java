@@ -16,6 +16,7 @@ public class BookService extends BaseService<Book,Long>{
 
     @Transactional
 	public Book addBook(Book book) {
+        System.out.println("fdsfdsddwdfwfw");
         Author author = authorRepository.findById(book.getAuthorId()).get();
         book.setAuthor(author);
         return this.save(book);

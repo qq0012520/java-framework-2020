@@ -7,10 +7,6 @@ import com.tudog.graphqldemo01.service.AuthorService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import graphql.kickstart.tools.GraphQLQueryResolver;
@@ -23,10 +19,7 @@ public class AuthorQuery implements GraphQLQueryResolver{
     private AuthorService authorService;
 
     public Author authorById(Long id, DataFetchingEnvironment env){
-        SecurityContext context = SecurityContextHolder.getContext();
-        Authentication authentication = context.getAuthentication();
-        String username = authentication.getName();
-        Object principal = authentication.getPrincipal();
+        System.out.println("Say something 12355554111");
         return authorService.findById(id, env);
     }
 
@@ -35,10 +28,10 @@ public class AuthorQuery implements GraphQLQueryResolver{
     }
     
     public Page<Author> pageAuthor(Integer page,Integer size,DataFetchingEnvironment env){
-        return authorService.findAll(PageRequest.of(page, size), env);
+        return authorService.findAll(page, size, env);
     }
 
-    public Author findByFirstName(String firstName,DataFetchingEnvironment env){
+    public List<Author> findByFirstName(String firstName,DataFetchingEnvironment env){
         return authorService.findByFirstName(firstName, env);
     }
     

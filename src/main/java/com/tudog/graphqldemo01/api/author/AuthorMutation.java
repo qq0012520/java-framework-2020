@@ -1,7 +1,6 @@
 package com.tudog.graphqldemo01.api.author;
 
 import com.tudog.graphqldemo01.entity.Author;
-import com.tudog.graphqldemo01.repository.AuthorRepository;
 import com.tudog.graphqldemo01.service.AuthorService;
 
 import org.springframework.beans.factory.annotation.Autowired;

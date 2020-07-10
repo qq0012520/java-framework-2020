@@ -1,5 +1,7 @@
 package com.tudog.graphqldemo01.service;
 
+import java.util.List;
+
 import com.tudog.graphqldemo01.entity.Author;
 import com.tudog.graphqldemo01.repository.AuthorRepository;
 import com.tudog.graphqldemo01.tools.BaseService;
@@ -14,7 +16,7 @@ public class AuthorService extends BaseService<Author,Long>{
     @Autowired
     private AuthorRepository authorRepository;
 
-    public Author findByFirstName(String firstName,DataFetchingEnvironment env){
+    public List<Author> findByFirstName(String firstName,DataFetchingEnvironment env){
         return authorRepository.findByFirstName(firstName, extractedGraphAttributes(env));
     }
 }
