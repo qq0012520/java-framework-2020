@@ -9,10 +9,6 @@ type AuthorMutation{
     addAuthor(input: AuthorInput): Author
 }
 
-type Subscription {
-  hello: Int
-}
-
 type Author{
     id: ID !
     firstName: String

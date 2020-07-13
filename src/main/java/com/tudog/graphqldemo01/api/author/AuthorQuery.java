@@ -19,7 +19,6 @@ public class AuthorQuery implements GraphQLQueryResolver{
     private AuthorService authorService;
 
     public Author authorById(Long id, DataFetchingEnvironment env){
-        System.out.println("Say something 12355554111");
         return authorService.findById(id, env);
     }
 

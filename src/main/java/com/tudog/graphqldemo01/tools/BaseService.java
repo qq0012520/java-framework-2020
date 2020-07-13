@@ -48,7 +48,6 @@ public abstract class BaseService<T, ID extends Serializable> {
         ParameterizedType parameterizedType =  (ParameterizedType) this.getClass().getGenericSuperclass();
         Type entityType = parameterizedType.getActualTypeArguments()[0];
         Class<T> clazz = (Class<T>) entityType;
-        System.out.println(clazz);
         Field[] fields = clazz.getDeclaredFields();
         if(fields.length > 0){
             for (Field field : fields) {

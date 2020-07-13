@@ -60,7 +60,7 @@ public class GraphQLAPIPreprocessor implements ApplicationListener<ApplicationCo
                 resolverClass.getDeclaredMethod(classNameUncap);
             }catch(javassist.NotFoundException e){
                 CtMethod newMethod = CtNewMethod.make("public " + fullClassName + " " + classNameUncap
-                   + "(Integer id){" + "return this;" + "}", resolverClass);
+                   + "(){" + "return this;" + "}", resolverClass);
                 resolverClass.addMethod(newMethod);
                 resolverClass.toClass();
             }

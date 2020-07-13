@@ -19,10 +19,11 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable();
         //http.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
-        http.authorizeRequests().anyRequest().authenticated()
-        .and().formLogin().permitAll()
-        .and().logout().permitAll();
+        // http.authorizeRequests().anyRequest().authenticated()
+        // .and().formLogin().permitAll()
+        // .and().logout().permitAll();
         // http.authorizeRequests().anyRequest().authenticated().and().formLogin().loginPage("/login").permitAll().and()
         //         .logout().permitAll();
     }

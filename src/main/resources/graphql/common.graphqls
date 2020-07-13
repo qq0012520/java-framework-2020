@@ -1,0 +1,11 @@
+scalar Upload
+
+type UploadResult{
+    id:ID
+}
+
+type CommonMutation{
+    singleUpload(file: Upload): UploadResult
+
+    multipleUpload(files: [Upload]): UploadResult
+}

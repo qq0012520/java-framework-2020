@@ -9,4 +9,5 @@ class LoginController {
     String login() {
         return "login.html";
     }
+
 }

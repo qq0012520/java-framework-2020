@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.jupiter.api.Test;
-
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -22,7 +20,6 @@ public class SimpleTest {
     private String str = "type fe33fefQueryw2QueryFEfwQuery  {}" + "type  BookQuery{}"
             + "type fewfwBookMutationewefweBookMutation {}";
 
-    @Test
     public void simpleTest() {
         Matcher matcher = pattern2.matcher(str);
         while (matcher.find()) {
@@ -30,13 +27,11 @@ public class SimpleTest {
         }
     }
 
-    @Test
     public void simpleTest2() {
         String sss = "type BookQuery";
         System.out.println(sss.split("\\s+")[1]);
     }
 
-    @Test
     public void simple3() throws NotFoundException, IOException, CannotCompileException {
         CtClass point = ClassPool.getDefault().get("com.tudog.graphqldemo01.api.book.BookQuery");
         CtMethod m = CtNewMethod.make(

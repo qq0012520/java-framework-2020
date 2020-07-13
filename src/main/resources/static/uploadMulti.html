@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Upload</title>
+    </head>
+    <body>
+        <form action="graphql" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="operations" value='{"query": "mutation($files: [Upload!]!) {commonMutation{multipleUpload(files: $files){ id }}}", "variables": { "files": [null,null] } }'>
+            <input type="hidden" name="map" value='{ "0": ["variables.files.0"],"1": ["variables.files.1"] }'>
+            <input type="file" name="0"/>
+            </br>
+            <input type="file" name="1" />
+            <input type="submit" value="upload"/>
+        </form>
+    </body>
+</html>

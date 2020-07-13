@@ -31,12 +31,7 @@ public class GraphQLSchemaMerger {
      * "type otherMutation"
      */
     private static final Pattern MUTATION_NAME_PATTER = Pattern.compile("type\\s+\\w+" + 
-        GraphQLProcessorSuffix.MUTATION);;
-
-    /**
-     * Schema 公共入口方法的通用参数列表
-     */
-    private static final String COMMON_ENTRY_PARAMETER_MODEL = "(id: ID)";
+        GraphQLProcessorSuffix.MUTATION);
 
     private List<String> schemas;
 
@@ -66,7 +61,7 @@ public class GraphQLSchemaMerger {
         for (String queryEntryName : items) {
             schemaBuilder.append("\n    ");
             schemaBuilder.append(StringUtils.uncapitalize(queryEntryName));
-            schemaBuilder.append(COMMON_ENTRY_PARAMETER_MODEL + ": ");
+            schemaBuilder.append(": ");
             schemaBuilder.append(queryEntryName + " ");
         }
         schemaBuilder.append(end);
