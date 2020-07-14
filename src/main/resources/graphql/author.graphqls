@@ -1,5 +1,5 @@
 type AuthorQuery{
-    authorById(id: ID !): Author
+    authorById(id: ID !): Author #fe'w'f'we'wefewfwewe
     findByFirstName(firstName: String): [Author]
     listAuthor: [Author]
     pageAuthor(page: Int,size: Int): Page

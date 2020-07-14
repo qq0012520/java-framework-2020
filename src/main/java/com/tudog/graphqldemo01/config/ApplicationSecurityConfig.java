@@ -11,6 +11,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -19,13 +20,14 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-        //http.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
+        http.csrf().ignoringAntMatchers("/login");
+        http.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
         // http.authorizeRequests().anyRequest().authenticated()
         // .and().formLogin().permitAll()
         // .and().logout().permitAll();
-        // http.authorizeRequests().anyRequest().authenticated().and().formLogin().loginPage("/login").permitAll().and()
-        //         .logout().permitAll();
+        http.authorizeRequests().anyRequest().authenticated()
+        .and().formLogin().permitAll().and()
+                .logout().permitAll();
     }
     
     /**

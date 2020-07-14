@@ -6,10 +6,12 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 
 import com.tudog.graphqldemo01.entity.base.BaseEntity;
+import com.tudog.graphqldemo01.repository.tools.UserJobNumberGenerator;
 
-import lombok.AllArgsConstructor;
+import org.hibernate.annotations.GenerationTime;
+import org.hibernate.annotations.GeneratorType;
+
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(
@@ -21,8 +23,6 @@ import lombok.NoArgsConstructor;
         }
 )
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class User extends BaseEntity{
 
     //账户(唯一)
@@ -34,4 +34,18 @@ public class User extends BaseEntity{
 
     //用户姓名,可重复
     private String name;
+
+    //工号
+    //@GeneratorType(type = UserJobNumberGenerator.class,when = GenerationTime.INSERT)
+    private String jobNumber;
+
+    public User() {
+    }
+    
+    public User(String account, String password, String name) {
+            this.account = account;
+            this.password = password;
+            this.name = name;
+    }
+
 }

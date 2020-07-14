@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.junit.jupiter.api.Test;
+
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -39,6 +41,11 @@ public class SimpleTest {
                         point);
         point.addMethod(m);
         point.writeFile("d:/");
+    }
+
+    @Test
+    public void simple4(){
+        System.out.println(Integer.parseInt("005"));
     }
 
 }

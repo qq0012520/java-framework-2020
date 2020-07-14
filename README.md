@@ -398,8 +398,6 @@ class LoginController {
 ## TODO待完善功能
 * Spring Boot 热部署
 * 复杂SQL支持，让SQL写入到文件（如XML）而不是写在java源代码中
-* GraphQL异常信息处理
 * Subscription 功能实现
-* 文件上传功能实现
 * （可选）自动生成全部或部分Schema文件
 * （控制台）日志输出

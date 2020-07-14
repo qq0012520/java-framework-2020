@@ -5,7 +5,7 @@ type UploadResult{
 }
 
 type CommonMutation{
-    singleUpload(file: Upload): UploadResult
+    singleUpload(file: Upload!): UploadResult
 
-    multipleUpload(files: [Upload]): UploadResult
+    multipleUpload(files: [Upload!]!): [UploadResult]
 }

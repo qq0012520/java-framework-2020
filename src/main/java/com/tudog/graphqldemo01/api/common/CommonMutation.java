@@ -4,17 +4,20 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 
 import com.google.common.io.Files;
 import com.tudog.graphqldemo01.model.common.UploadResult;
 import com.tudog.graphqldemo01.tools.DateUtil;
+import com.tudog.graphqldemo01.tools.HttpTool;
 import com.tudog.graphqldemo01.tools.SignUtil;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
-import org.springframework.util.StringUtils;
 
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import graphql.schema.DataFetchingEnvironment;
@@ -35,24 +38,28 @@ public class CommonMutation implements GraphQLMutationResolver {
         }
     }
 
-    public UploadResult singleUpload(Part part,DataFetchingEnvironment env) throws IOException {
-        String id = env.getArgument("id");
+    public UploadResult singleUpload(Part part,DataFetchingEnvironment env) {
+        HttpServletRequest req = HttpTool.getHttpServletRequest(env);
+        System.out.println(req.getAttribute("relationId"));
         String uploadPath = makeUploadPath();
-        if(StringUtils.isEmpty(id)){
-            id = SignUtil.fileNameByTime();
-        }
-        id = id + "." + Files.getFileExtension(part.getSubmittedFileName());
+        String id = SignUtil.fileNameByTime() + "." + Files.getFileExtension(part.getSubmittedFileName());
         String destFile = uploadPath + File.separator + id;
         log.info("Upload Part: {} to path {}", part.getSubmittedFileName(),destFile);
-        
-        part.write(destFile);
-
+        try {
+            part.write(destFile);
+        } catch (IOException e) {
+            log.error("Upload Part error : ", e.toString());
+            id = "error";
+        }
         return new UploadResult(id);
     }
 
-    public UploadResult multipleUpload(Part[] parts,DataFetchingEnvironment env){
-        System.out.println(parts);
-        return new UploadResult("fsdfsd");
+    public List<UploadResult> multipleUpload(List<Part> parts,DataFetchingEnvironment env){
+        List<UploadResult> results = new ArrayList<>();
+        for (Part part : parts) {
+            results.add(singleUpload(part, env));
+        }
+        return results;
     }
 
     /**
