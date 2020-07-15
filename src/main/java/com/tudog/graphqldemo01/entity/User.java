@@ -36,7 +36,7 @@ public class User extends BaseEntity{
     private String name;
 
     //工号
-    //@GeneratorType(type = UserJobNumberGenerator.class,when = GenerationTime.INSERT)
+    @GeneratorType(type = UserJobNumberGenerator.class,when = GenerationTime.INSERT)
     private String jobNumber;
 
     public User() {

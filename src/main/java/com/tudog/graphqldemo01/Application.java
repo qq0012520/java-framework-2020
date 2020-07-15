@@ -34,8 +34,8 @@ public class Application {
             if(userService.count() > 0){
                 return;
             }
-			User user1 = new User("eric",EncryptUtil.encryptPassword("123456"),"张三");
-			User user2 = new User("tudog",EncryptUtil.encryptPassword("Qazplm123"),"里斯");
+			User user1 = new User("lisi",EncryptUtil.encryptPassword("123456"),"dsfsdd");
+			User user2 = new User("zhangsan",EncryptUtil.encryptPassword("123456"),"Gary");
 			userService.save(user1);
 			userService.save(user2);
 	    };

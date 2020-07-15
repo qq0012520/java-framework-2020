@@ -1,18 +1,12 @@
 package com.tudog.graphqldemo01.repository.tools;
 
-import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.List;
 
-import org.hibernate.query.NativeQuery;
-import org.hibernate.query.Query;
+import com.tudog.graphqldemo01.entity.User;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.engine.spi.SharedSessionContractImplementor;
-import org.hibernate.id.IdentifierGenerator;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import org.hibernate.tuple.ValueGenerator;
 
 import lombok.extern.slf4j.Slf4j;
@@ -54,23 +48,23 @@ public abstract class AbstractIdentifierGenerator implements ValueGenerator<Stri
 
     @Override
     public String generateValue(Session session, Object owner) {
-        NativeQuery<String> query = session.createNativeQuery("select max(user) max_sign from " + tableName, String.class);
-
+        Query<User> query = session.createQuery("select u from User u",User.class);
         try {
-            String idRaw = query.getSingleResult();
+            List<User> list = query.getResultList();
+            //User idRaw = query.getSingleResult();
 
            // ResultSet rs=statement.executeQuery("select max(" + fieldName + ") max_sign from " + tableName);
-            String id;
-            if(idRaw == null){
-                id = nextNumber(null);
-            }else{
-                String idStr = extractIdNumber(idRaw);
-                id = nextNumber(idStr);
-            }
-            String generatedId = prefix + id + suffix;
-            log.info("Generated Id: " + generatedId);
-            return generatedId;        
-            
+            // String id;
+            // if(idRaw == null){
+            //     id = nextNumber(null);
+            // }else{
+            //     String idStr = extractIdNumber(idRaw);
+            //     id = nextNumber(idStr);
+            // }
+            // String generatedId = prefix + id + suffix;
+            // log.info("Generated Id: " + generatedId);
+            // return generatedId;        
+            return "fd";
         } catch (Exception e) {
             log.error("Generating Id error: " + e.getMessage());
             e.printStackTrace();
