@@ -10,6 +10,10 @@ public class EncryptUtil {
 
     private static final PasswordEncoder PASSWORD_ENCODER = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
+    public static PasswordEncoder getDelegatingPasswordEncoder(){
+        return PASSWORD_ENCODER;
+    }
+
     public static String encryptPassword(String rawPassword){
         return PASSWORD_ENCODER.encode(rawPassword);
     }
