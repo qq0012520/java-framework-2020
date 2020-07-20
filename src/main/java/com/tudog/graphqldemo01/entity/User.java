@@ -5,11 +5,13 @@ import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tudog.graphqldemo01.entity.base.BaseEntity;
 import com.tudog.graphqldemo01.repository.tools.UserJobNumberGenerator;
 
 import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.GeneratorType;
+import org.hibernate.annotations.ValueGenerationType;
 
 import lombok.Data;
 
@@ -29,13 +31,15 @@ public class User extends BaseEntity{
     @Column(unique = true)
     private String account;
 
-    //密码
+    //密码 
+    @JsonIgnore
     private String password;
 
     //用户姓名,可重复
     private String name;
 
     //工号
+    //@ValueGenerationType
     @GeneratorType(type = UserJobNumberGenerator.class,when = GenerationTime.INSERT)
     private String jobNumber;
 

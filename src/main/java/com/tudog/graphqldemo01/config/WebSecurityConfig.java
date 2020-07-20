@@ -14,7 +14,6 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
@@ -57,11 +56,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
          .antMatchers(
             "/",
             "/*.html",
-            "/favicon.ico",
+            "/**/favicon.ico",
             "/**/*.html",
             "/**/*.css",
             "/**/*.js",
-            "/h2-console/**"
+            "/**/*.js.map"
          );
    }
 
@@ -91,7 +90,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
          .and()
          .authorizeRequests()
-         .antMatchers("/api/authenticate").permitAll()
+         .antMatchers("/api/authenticate","/graphiql","/subscriptions").permitAll()
 
          .anyRequest().authenticated()
 

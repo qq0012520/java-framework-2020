@@ -17,7 +17,7 @@ public class UserRestController {
    public UserRestController(UserService userService) {
       this.userService = userService;
    }
-
+   
    @GetMapping("/user")
    public ResponseEntity<User> getActualUser() {
       return ResponseEntity.ok(userService.getUserWithAuthorities().get());

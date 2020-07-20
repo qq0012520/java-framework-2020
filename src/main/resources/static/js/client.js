@@ -84,19 +84,18 @@ $(function () {
          success: function (data, textStatus, jqXHR) {
             var $userInfoBody = $userInfo.find("#userInfoBody");
 
-            $userInfoBody.append($("<div>").text("Username: " + data.username));
-            $userInfoBody.append($("<div>").text("Firstname: " + data.firstname));
-            $userInfoBody.append($("<div>").text("Lastname: " + data.lastname));
-            $userInfoBody.append($("<div>").text("Email: " + data.email));
+            $userInfoBody.append($("<div>").text("Username: " + data.account));
+            $userInfoBody.append($("<div>").text("Name: " + data.name));
+            $userInfoBody.append($("<div>").text("JobNumber: " + data.jobNumber));
 
-            var $authorityList = $("<ul>");
-            data.authorities.forEach(function (authorityItem) {
-               $authorityList.append($("<li>").text(authorityItem.name));
-            });
-            var $authorities = $("<div>").text("Authorities:");
-            $authorities.append($authorityList);
+            // var $authorityList = $("<ul>");
+            // data.authorities.forEach(function (authorityItem) {
+            //    $authorityList.append($("<li>").text(authorityItem.name));
+            // });
+            // var $authorities = $("<div>").text("Authorities:");
+            // $authorities.append($authorityList);
 
-            $userInfoBody.append($authorities);
+            // $userInfoBody.append($authorities);
             $userInfo.show();
          }
       });

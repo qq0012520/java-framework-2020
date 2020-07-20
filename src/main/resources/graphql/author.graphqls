@@ -1,5 +1,7 @@
 type AuthorQuery{
-    authorById(id: ID !): Author #fe'w'f'we'wefewfwewe
+    #通过id查找作者
+    authorById(id: ID !): Author 
+    #通过名字查找作者
     findByFirstName(firstName: String): [Author]
     listAuthor: [Author]
     pageAuthor(page: Int,size: Int): Page
@@ -9,10 +11,13 @@ type AuthorMutation{
     addAuthor(input: AuthorInput): Author
 }
 
+#作者字段
 type Author{
+    #作者唯一标识
     id: ID !
     firstName: String
     lastName: String
+    #作者包含的书籍
     books: [Book]
 }
 

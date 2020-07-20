@@ -18,6 +18,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import ch.qos.logback.core.util.Loader;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
@@ -30,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class GraphQLAPIPreprocessor implements ApplicationListener<ApplicationContextInitializedEvent > {
+public class GraphQLAPIPreprocessor implements ApplicationListener<ApplicationContextInitializedEvent> {
         
     @Override
     public void onApplicationEvent(ApplicationContextInitializedEvent event) {
