@@ -31,16 +31,11 @@ public class Application {
 	@Bean
     CommandLineRunner initDataGenerate(){
 	    return args -> {
-            // if(userService.count() > 0){
-            //     return;
-            // }
-			// User user1 = new User("eric",EncryptUtil.encryptPassword("123456"),"Peter");
-			// User user2 = new User("zhangsan",EncryptUtil.encryptPassword("123456"),"Gary");
-			// userService.save(user1);
-			// userService.save(user2);
-
-			User user1 = new User("eric2",EncryptUtil.encryptPassword("123456"),"Peter");
-			User user2 = new User("zhangsan2",EncryptUtil.encryptPassword("123456"),"Gary");
+            if(userService.count() > 0){
+                return;
+            }
+			User user1 = new User("eric",EncryptUtil.encryptPassword("123456"),"Peter");
+			User user2 = new User("zhangsan",EncryptUtil.encryptPassword("123456"),"Gary");
 			userService.save(user1);
 			userService.save(user2);
 	    };

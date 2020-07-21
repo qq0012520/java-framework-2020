@@ -1,29 +1,24 @@
 package com.tudog.graphqldemo01.config;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.reflections.Reflections;
 import org.springframework.boot.context.event.ApplicationContextInitializedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import ch.qos.logback.core.util.Loader;
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.CtNewMethod;
-import javassist.bytecode.ClassFile;
+import graphql.kickstart.tools.GraphQLMutationResolver;
+import graphql.kickstart.tools.GraphQLQueryResolver;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -51,25 +46,35 @@ public class GraphQLAPIPreprocessor implements ApplicationListener<ApplicationCo
     }
 
     private void modifyClass(File file, String classNameUncap) {
-        try(DataInputStream classInput = new DataInputStream(
-            new BufferedInputStream(new FileInputStream(file)))) {
-            ClassFile classFile = new ClassFile(classInput);
-            String fullClassName = classFile.getName();
-            ClassPool classPool = ClassPool.getDefault();
-            CtClass resolverClass = classPool.get(fullClassName);
-            try{
-                resolverClass.getDeclaredMethod(classNameUncap);
-            }catch(javassist.NotFoundException e){
-                CtMethod newMethod = CtNewMethod.make("public " + fullClassName + " " + classNameUncap
-                   + "(){" + "return this;" + "}", resolverClass);
-                resolverClass.addMethod(newMethod);
-                resolverClass.toClass();
-            }
-            log.info("Skip creating boilerplate method. There's already a method named " + classNameUncap);
-        } catch (Exception e) {
-            log.error("Error with creating boilerplate methods. Error message : " + e.getMessage());
-            System.exit(1);
+        Reflections reflections = new Reflections("com.tudog.graphqldemo01.api");
+        Set<Class<?>> graphApiTypes = new HashSet<>();
+        graphApiTypes.addAll(reflections.getSubTypesOf(GraphQLQueryResolver.class));
+        graphApiTypes.addAll(reflections.getSubTypesOf(GraphQLMutationResolver.class));
+
+        for (Class<?> apiType : graphApiTypes) {
+            //TODO
         }
+
+        // try(DataInputStream classInput = new DataInputStream(
+        //     new BufferedInputStream(new FileInputStream(file)))) {
+        //     ClassFile classFile = new ClassFile(classInput);
+        //     String fullClassName = classFile.getName();
+        //     ClassPool classPool = ClassPool.getDefault();
+        //     CtClass resolverClass = classPool.get(fullClassName);
+        //     try{
+        //         resolverClass.getDeclaredMethod(classNameUncap);
+        //     }catch(javassist.NotFoundException e){
+        //         CtMethod newMethod = CtNewMethod.make("public " + fullClassName + " " + classNameUncap
+        //            + "(){" + "return this;" + "}", resolverClass);
+        //         resolverClass.addMethod(newMethod);
+        //         resolverClass.toClass();
+        //     }
+        //     log.info("Skip creating boilerplate method. There's already a method named " + classNameUncap);
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        //     log.error("Error with creating boilerplate methods. Error message : " + e.getMessage());
+        //     System.exit(1);
+        // }
     }
 
     private IOFileFilter[] stringsToSuffixFilters(String[] strings){

@@ -59,6 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/**/favicon.ico",
             "/**/*.html",
             "/**/*.css",
+            "/**/*.css.map",
             "/**/*.js",
             "/**/*.js.map"
          );

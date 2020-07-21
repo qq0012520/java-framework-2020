@@ -11,7 +11,6 @@ import com.tudog.graphqldemo01.repository.tools.UserJobNumberGenerator;
 
 import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.GeneratorType;
-import org.hibernate.annotations.ValueGenerationType;
 
 import lombok.Data;
 
@@ -31,7 +30,7 @@ public class User extends BaseEntity{
     @Column(unique = true)
     private String account;
 
-    //密码 
+    //密码
     @JsonIgnore
     private String password;
 
@@ -39,13 +38,13 @@ public class User extends BaseEntity{
     private String name;
 
     //工号
-    //@ValueGenerationType
+    @Column(unique = true)
     @GeneratorType(type = UserJobNumberGenerator.class,when = GenerationTime.INSERT)
     private String jobNumber;
 
     public User() {
     }
-    
+     
     public User(String account, String password, String name) {
             this.account = account;
             this.password = password;
