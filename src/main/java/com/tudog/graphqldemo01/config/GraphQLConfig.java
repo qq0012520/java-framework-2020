@@ -28,7 +28,7 @@ public class GraphQLConfig {
     private ApplicationContext applicationContext;
 
     @Autowired
-    private List<GraphQLResolver<Void>> GraphResolvers;
+    private List<GraphQLResolver<Void>> graphResolvers;
 
     @Bean
     SchemaStringProvider mySchemaProvider() {
@@ -54,7 +54,7 @@ public class GraphQLConfig {
     }
 
     private void printReflectiveMethods(){
-        for (GraphQLResolver<Void> res : GraphResolvers) {
+        for (GraphQLResolver<Void> res : graphResolvers) {
             String className = res.getClass().getSimpleName();
             if(className.contains("$")){ //过滤掉CGLIB增强类后缀
                 className = className.substring(0,className.indexOf("$"));
