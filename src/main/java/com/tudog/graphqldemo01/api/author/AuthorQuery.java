@@ -7,18 +7,16 @@ import com.tudog.graphqldemo01.service.AuthorService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Component;
 
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import graphql.schema.DataFetchingEnvironment;
 
-@Component
 public class AuthorQuery implements GraphQLQueryResolver{
-
+    
     @Autowired
     private AuthorService authorService;
 
-    public Author authorById(Long id, DataFetchingEnvironment env){
+    public Author findById(Long id, DataFetchingEnvironment env){
         return authorService.findById(id, env);
     }
 

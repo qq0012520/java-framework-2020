@@ -16,7 +16,6 @@ import com.tudog.graphqldemo01.tools.DateUtil;
 import com.tudog.graphqldemo01.tools.HttpTool;
 import com.tudog.graphqldemo01.tools.SignUtil;
 
-import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -24,7 +23,6 @@ import graphql.schema.DataFetchingEnvironment;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Component
 public class CommonMutation implements GraphQLMutationResolver {
 
     private String fileUploadRootPath;

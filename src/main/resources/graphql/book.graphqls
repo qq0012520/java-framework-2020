@@ -1,5 +1,5 @@
 type BookQuery{
-    bookById(id: ID): Book
+    findById(id: ID): Book
 }
 
 type BookMutation{

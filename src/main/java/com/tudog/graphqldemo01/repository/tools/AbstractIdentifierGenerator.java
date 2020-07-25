@@ -17,7 +17,7 @@ import org.springframework.util.StringUtils;
  * 和 suffix 可以为空 该类的实现依赖于数据列在表中的自然顺序，使用 (select max(${fieldName} from
  * ${tableName})) 来判断表中最大值
  */
-public abstract class  AbstractIdentifierGenerator implements ValueGenerator<String> {
+public abstract class AbstractIdentifierGenerator implements ValueGenerator<String> {
 
     private final org.slf4j.Logger log;
 

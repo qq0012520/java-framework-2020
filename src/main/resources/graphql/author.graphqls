@@ -1,6 +1,6 @@
 type AuthorQuery{
     #通过id查找作者
-    authorById(id: ID !): Author 
+    findById(id: ID !): Author 
     #通过名字查找作者
     findByFirstName(firstName: String): [Author]
     listAuthor: [Author]

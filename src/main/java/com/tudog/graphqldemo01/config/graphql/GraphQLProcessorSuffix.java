@@ -1,4 +1,4 @@
-package com.tudog.graphqldemo01.config;
+package com.tudog.graphqldemo01.config.graphql;
 
 /**
  * GraphQL处理器后缀名枚举

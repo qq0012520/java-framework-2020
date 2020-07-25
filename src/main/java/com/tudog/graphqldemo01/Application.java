@@ -1,7 +1,6 @@
 package com.tudog.graphqldemo01;
 
 import com.cosium.spring.data.jpa.entity.graph.repository.support.EntityGraphJpaRepositoryFactoryBean;
-import com.tudog.graphqldemo01.config.GraphQLAPIPreprocessor;
 import com.tudog.graphqldemo01.entity.User;
 import com.tudog.graphqldemo01.service.UserService;
 import com.tudog.graphqldemo01.tools.EncryptUtil;
@@ -23,9 +22,7 @@ public class Application {
 	private UserService userService;
 
 	public static void main(String[] args) {
-		SpringApplication springApplication = new SpringApplication(Application.class);
-		springApplication.addListeners(new GraphQLAPIPreprocessor());
-		springApplication.run(args);
+		new SpringApplication(Application.class).run(args);
 	}
 
 	@Bean

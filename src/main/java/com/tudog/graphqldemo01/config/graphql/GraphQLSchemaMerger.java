@@ -1,4 +1,4 @@
-package com.tudog.graphqldemo01.config;
+package com.tudog.graphqldemo01.config.graphql;
 
 import java.util.ArrayList;
 import java.util.List;
