@@ -3,27 +3,28 @@
     <head>
         <title>Please Log In</title>
         <script type="text/javascript"> 
-            // window.onload=function(){ 
-            //     let csrfToken = getCookie("XSRF-TOKEN");
-            //     var input = document.getElementById("csrf_token");
-            //     input.value = csrfToken;
-            //     function getCookie(cname)
-            //     {
-            //         var name = cname + "=";
-            //         var ca = document.cookie.split(';');
-            //         for(var i=0; i<ca.length; i++) 
-            //         {
-            //             var c = ca[i].trim();
-            //             if (c.indexOf(name)==0) return c.substring(name.length,c.length);
-            //         }
-            //         return "";
-            //     } 
-            // } 
+            window.onload=function(){ 
+                let csrfToken = getCookie("XSRF-TOKEN");
+                var input = document.getElementById("csrf_token");
+                input.value = csrfToken;
+                function getCookie(cname)
+                {
+                    var name = cname + "=";
+                    var ca = document.cookie.split(';');
+                    for(var i=0; i<ca.length; i++) 
+                    {
+                        var c = ca[i].trim();
+                        if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+                    }
+                    return "";
+                } 
+            } 
         </script>
     </head>
     <body>
         <h1>Please Log In</h1>
         <form action="/login" method="post">
+            <input type="hidden" name="_csrf" id="csrf_token">
             <div>
             <input type="text" name="username" placeholder="Username"/>
             </div>
