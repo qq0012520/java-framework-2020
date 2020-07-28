@@ -1,20 +1,32 @@
 package com.tudog.graphqldemo01.tools;
 
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
 import javax.persistence.OneToMany;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import com.cosium.spring.data.jpa.entity.graph.domain.EntityGraph;
 import com.cosium.spring.data.jpa.entity.graph.domain.EntityGraphUtils;
 import com.cosium.spring.data.jpa.entity.graph.domain.EntityGraphs;
 import com.cosium.spring.data.jpa.entity.graph.repository.EntityGraphJpaRepository;
+import com.tudog.graphqldemo01.entity.base.BaseEntity;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,24 +35,114 @@ import org.springframework.data.domain.Sort;
 
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.DataFetchingFieldSelectionSet;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * 基本业务类，提供基本的CRUD方法和分页方法
- * 对于GraphQL的支持：查询方法通常需要传入 graphql.schema.DataFetchingEnvironment 对象
+ * 基本业务类，提供基本的CRUD方法和分页方法 对于GraphQL的支持：查询方法通常需要传入
+ * graphql.schema.DataFetchingEnvironment 对象
  * 该对象用于提取实体的某些（懒加载）属性，实体中有些属性会根据实际情况提取，比如注解为@OneToMany的属性
  * 
- * @param <T> 实体对象类型
+ * @param <T>  实体对象类型
  * @param <ID> 实体的ID类型
  */
-public abstract class BaseService<T, ID extends Serializable> {
+@Slf4j
+public abstract class BaseService<T extends BaseEntity, ID extends Serializable> {
     protected EntityGraphJpaRepository<T, ID> baseRepository;
 
-    //保存实体类用于查询（lazy）属性名称
+    @PersistenceContext
+    protected EntityManager entityManager;
+
+    // 保存实体类用于查询（lazy）属性名称
     private List<String> graphAttributeNames = new ArrayList<>();
 
     @Autowired
     protected void setBaseRepository(EntityGraphJpaRepository<T, ID> baseRepository) {
         this.baseRepository = baseRepository;
+    }
+
+    /**
+     * 保存或更新实体 1.) 如果实体ID为空，则插入实体 2.) 如果实体ID不为空，则更新实体，只更新实体的非空字段
+     * 
+     * @param entity
+     */
+    protected void insertOrUpdate(T entity) {
+        if (entity.getId() == null) {
+            save(entity);
+        } else {
+            updateEntitySelection(entity);
+        }
+    }
+
+    /**
+     * 动态更新实体对象（只更新实体的非空字段）
+     * 
+     * @param entity 要实体对象,对象ID不能为空
+     */
+    protected int updateEntitySelection(T entity) {
+        if (entity.getId() == null)
+            throw new RuntimeException("entity's id can't be null!");
+        Map<String, Object> propertyMap = reflectNotNulProperties(entity);
+        String hql = makeUpdateHql(entity, propertyMap.keySet());
+        Query query = entityManager.createQuery(hql.toString());
+        populateQueryParameters(query, propertyMap.values());
+        return query.executeUpdate();
+    }
+
+    private void populateQueryParameters(Query query, Collection<Object> propertyValues) {
+        int position = 1;
+        for (Object propertyValue : propertyValues) {
+            query.setParameter(position++, propertyValue);
+        }
+    }
+
+    private String makeUpdateHql(T entity, Set<String> propertyNames) {
+        StringBuilder hql = new StringBuilder();
+        hql.append("update " + entity.getClass().getSimpleName() + " set ");
+        int position = 1;
+        for (String propertyName : propertyNames) {
+            hql.append(propertyName + "=?" + position++ + ", ");
+        }
+        hql.deleteCharAt(hql.length() - 2);
+        hql.append(" where id=" + entity.getId());
+        return hql.toString();
+    }
+
+    /**
+     * 通过反射获取对象 input 的非空属性
+     * 
+     * @param input
+     */
+    private Map<String, Object> reflectNotNulProperties(T input) {
+        PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(input.getClass());
+        Map<String, Object> propertyMap = new HashMap<>();
+        for (PropertyDescriptor descriptor : descriptors) {
+            String propertyName = descriptor.getName();
+            if (propertyName.equals("class") || propertyName.equals("id")) {
+                continue;
+            }
+            Field propretyField;
+            try {
+                propretyField = input.getClass().getDeclaredField(propertyName);
+                if(propretyField.isAnnotationPresent(org.springframework.data.annotation.Transient.class)
+                || propretyField.isAnnotationPresent(javax.persistence.Transient.class)){
+                continue;
+            }
+            } catch (NoSuchFieldException | SecurityException e1) {
+                log.info("Reflect field error " +propertyName + " message: " + e1.getMessage());
+                continue;
+            }
+            try {
+                Method readMethod = descriptor.getReadMethod();
+                
+                Object value = readMethod.invoke(input);
+                if(value != null){
+                    propertyMap.put(propertyName, value);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }    
+        }
+        return propertyMap;
     }
 
     @SuppressWarnings("unchecked")
