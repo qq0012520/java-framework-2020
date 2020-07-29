@@ -8,10 +8,10 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,6 +25,7 @@ import com.cosium.spring.data.jpa.entity.graph.domain.EntityGraphUtils;
 import com.cosium.spring.data.jpa.entity.graph.domain.EntityGraphs;
 import com.cosium.spring.data.jpa.entity.graph.repository.EntityGraphJpaRepository;
 import com.tudog.graphqldemo01.entity.base.BaseEntity;
+import com.tudog.graphqldemo01.exception.PersistentException;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,12 +65,14 @@ public abstract class BaseService<T extends BaseEntity, ID extends Serializable>
      * 保存或更新实体 1.) 如果实体ID为空，则插入实体 2.) 如果实体ID不为空，则更新实体，只更新实体的非空字段
      * 
      * @param entity
+     * @throws PersistentException
      */
-    protected void insertOrUpdate(T entity) {
+    public void insertOrUpdate(T entity) {
         if (entity.getId() == null) {
             save(entity);
         } else {
-            updateEntitySelection(entity);
+            int updateCount = updateEntitySelection(entity);
+            if(updateCount == 0) throw new PersistentException("更新记录失败");
         }
     }
 
@@ -77,11 +80,16 @@ public abstract class BaseService<T extends BaseEntity, ID extends Serializable>
      * 动态更新实体对象（只更新实体的非空字段）
      * 
      * @param entity 要实体对象,对象ID不能为空
+     * @throws PersistentException
      */
-    protected int updateEntitySelection(T entity) {
+    public int updateEntitySelection(T entity) {
         if (entity.getId() == null)
             throw new RuntimeException("entity's id can't be null!");
         Map<String, Object> propertyMap = reflectNotNulProperties(entity);
+        if(propertyMap.size() == 0){
+            throw new PersistentException("没有需要更新的列");
+        }
+        propertyMap.put(BaseEntity.LAST_MODIFIED_TIME_FIELD, new Date());
         String hql = makeUpdateHql(entity, propertyMap.keySet());
         Query query = entityManager.createQuery(hql.toString());
         populateQueryParameters(query, propertyMap.values());
@@ -117,18 +125,18 @@ public abstract class BaseService<T extends BaseEntity, ID extends Serializable>
         Map<String, Object> propertyMap = new HashMap<>();
         for (PropertyDescriptor descriptor : descriptors) {
             String propertyName = descriptor.getName();
-            if (propertyName.equals("class") || propertyName.equals("id")) {
+            if (propertyName.equals("class") || propertyName.equals("id") || propertyName.equals(BaseEntity.LAST_MODIFIED_TIME_FIELD)) {
                 continue;
             }
             Field propretyField;
             try {
                 propretyField = input.getClass().getDeclaredField(propertyName);
                 if(propretyField.isAnnotationPresent(org.springframework.data.annotation.Transient.class)
-                || propretyField.isAnnotationPresent(javax.persistence.Transient.class)){
+                    || propretyField.isAnnotationPresent(javax.persistence.Transient.class)){
                 continue;
             }
             } catch (NoSuchFieldException | SecurityException e1) {
-                log.info("Reflect field error " +propertyName + " message: " + e1.getMessage());
+                log.info("Reflect field error " + propertyName + " message: " + e1.getMessage());
                 continue;
             }
             try {
@@ -381,6 +389,20 @@ public abstract class BaseService<T extends BaseEntity, ID extends Serializable>
 	 */
     public void deleteInBatch(Iterable<T> entities){
         baseRepository.deleteInBatch(entities);
+    }
+
+    /**
+	 * Returns a reference to the entity with the given identifier. Depending on how the JPA persistence provider is
+	 * implemented this is very likely to always return an instance and throw an
+	 * {@link javax.persistence.EntityNotFoundException} on first access. Some of them will reject invalid identifiers
+	 * immediately.
+	 *
+	 * @param id must not be {@literal null}.
+	 * @return a reference to the entity with the given identifier.
+	 * @see EntityManager#getReference(Class, Object) for details on when an exception is thrown.
+	 */
+    public T getOne(ID id){
+        return baseRepository.getOne(id);
     }
    
 }

@@ -74,19 +74,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
    @Override
    protected void configure(HttpSecurity httpSecurity) throws Exception {
-      httpSecurity
-      .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-      .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
-      .formLogin().successHandler(webAuthenticationSuccessHandle).failureHandler(webAuthenticationFailureHandler).permitAll()
-      .and()
-      .logout().logoutUrl("/logout").logoutSuccessHandler(webLogoutSuccessHandler).permitAll()
-      .and()
-      .exceptionHandling()
-      .authenticationEntryPoint(authenticationErrorHandler)
-      .accessDeniedHandler(webAccessDenyHandler)
-      .and()
-      .authorizeRequests()
-      .anyRequest().authenticated();
+      httpSecurity.securityContext().disable();
+      // .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+      // .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+      // .formLogin().successHandler(webAuthenticationSuccessHandle).failureHandler(webAuthenticationFailureHandler).permitAll()
+      // .and()
+      // .logout().logoutUrl("/logout").logoutSuccessHandler(webLogoutSuccessHandler).permitAll()
+      // .and()
+      // .exceptionHandling()
+      // .authenticationEntryPoint(authenticationErrorHandler)
+      // .accessDeniedHandler(webAccessDenyHandler)
+      // .and()
+      // .authorizeRequests()
+      // .anyRequest().authenticated();
 
    }
 

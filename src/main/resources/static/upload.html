@@ -3,27 +3,27 @@
     <head>
         <title>Upload</title>
         <script type="text/javascript"> 
-            window.onload=function(){ 
-                let csrfToken = getCookie("XSRF-TOKEN");
-                var input = document.getElementById("csrf_token");
-                input.value = csrfToken;
-                function getCookie(cname)
-                {
-                    var name = cname + "=";
-                    var ca = document.cookie.split(';');
-                    for(var i=0; i<ca.length; i++) 
-                    {
-                        var c = ca[i].trim();
-                        if (c.indexOf(name)==0) return c.substring(name.length,c.length);
-                    }
-                    return "";
-                } 
-            } 
+            // window.onload=function(){ 
+            //     let csrfToken = getCookie("XSRF-TOKEN");
+            //     var input = document.getElementById("csrf_token");
+            //     input.value = csrfToken;
+            //     function getCookie(cname)
+            //     {
+            //         var name = cname + "=";
+            //         var ca = document.cookie.split(';');
+            //         for(var i=0; i<ca.length; i++) 
+            //         {
+            //             var c = ca[i].trim();
+            //             if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+            //         }
+            //         return "";
+            //     } 
+            // } 
         </script>
     </head>
     <body>
         <form action="graphql" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="_csrf" id="csrf_token">
+            <!-- <input type="hidden" name="_csrf" id="csrf_token"> -->
             <input type="hidden" name="operations" value='{"query": "mutation($file: Upload!) {commonMutation{singleUpload(file: $file) { id }}}", "variables": { "file": null,"id": "kkk123" } }'>
             <input type="hidden" name="map" value='{ "0": ["variables.file"] }'>
             <input type="file" name="0" />

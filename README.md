@@ -401,3 +401,4 @@ class LoginController {
 * Subscription 功能实现
 * （可选）自动生成全部或部分Schema文件
 * （控制台）日志输出
+* Actuator 健康检查

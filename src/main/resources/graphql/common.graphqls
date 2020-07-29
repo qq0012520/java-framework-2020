@@ -4,6 +4,12 @@ type UploadResult{
     id:ID
 }
 
+type WebResult{
+    success: Boolean!
+    code: String
+    msg: String
+}
+
 type CommonMutation{
     singleUpload(file: Upload!): UploadResult
 

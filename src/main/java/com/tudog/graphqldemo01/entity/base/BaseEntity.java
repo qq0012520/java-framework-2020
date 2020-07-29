@@ -17,6 +17,8 @@ import lombok.Setter;
 @EqualsAndHashCode
 @MappedSuperclass
 public abstract class BaseEntity{
+    public static final String LAST_MODIFIED_TIME_FIELD = "lastModifiedTime";
+
     @Getter
     @Setter
     @Id

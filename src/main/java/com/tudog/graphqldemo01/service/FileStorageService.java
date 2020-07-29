@@ -50,14 +50,14 @@ public class FileStorageService {
         String uploadPath = makeUploadPath(dateDir);
         String id = SignUtil.fileNameByTime() + "." + Files.getFileExtension(part.getSubmittedFileName());
         String destFile = uploadPath + File.separator + id;
-        log.info("Upload Part: {} to path {}", part.getSubmittedFileName(),destFile);
+        log.info("Upload File: {} to path {}", part.getSubmittedFileName(),destFile);
         try {
             part.write(destFile);
         } catch (IOException e) {
-            log.error("Upload Part error : ", e.toString());
+            log.error("Upload File error : ", e.toString());
             id = "error";
         }
-        return dateDir + id;
+        return dateDir + "/" + id;
     }
 
 	public Path load(String filename) {
@@ -94,6 +94,6 @@ public class FileStorageService {
 
     private String generateTimePath(){
         String curDayStr = LocalDate.now().format(DateUtil.FORMATTER_YYYYMMDD);
-        return curDayStr + File.separator;
+        return curDayStr;
     }
 }
