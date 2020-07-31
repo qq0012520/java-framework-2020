@@ -8,7 +8,7 @@ import graphql.GraphQLError;
 import graphql.kickstart.execution.error.GraphQLErrorHandler;
 
 @Component
-public class GraphQLErrorCustomHandler implements GraphQLErrorHandler {
+class GraphQLErrorCustomHandler implements GraphQLErrorHandler {
 
     @Override
     public List<GraphQLError> processErrors(List<GraphQLError> errors) {

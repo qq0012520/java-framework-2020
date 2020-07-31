@@ -3,7 +3,7 @@ package com.tudog.graphqldemo01.config.graphql;
 /**
  * GraphQL处理器后缀名枚举
  */
-public enum GraphQLProcessorSuffix {
+enum GraphQLProcessorSuffix {
     /**
      * 查询处理去后缀名
      */

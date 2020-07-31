@@ -1,0 +1,70 @@
+type BladeQuery{
+    findByCategory(categoryId: ID !,page: Int !,size: Int !): BladeVisualPage
+    findAllCategory: [BladeVisualCategory]
+    findVisualById(id: ID!):BladeVisual
+}
+
+type BladeMutation{
+    saveVisual(input: BladeVisualInput): WebResult
+    saveVisualConfig(input: BladeVisualConfigInput): WebResult
+}
+
+input BladeVisualInput{
+    id: ID
+    title: String
+    backgroundUrl: String
+    categoryId: ID
+    configId:ID
+    password: String
+    createUser: Int
+    createDept: Int
+    #格式为：yyyy-MM-dd HH:mm:ss
+    createTime: String
+    updateUser: Int
+    #格式为：yyyy-MM-dd HH:mm:ss
+    updateTime: String
+    status: String
+}
+
+type BladeVisual{
+    id: ID !
+    title: String
+    backgroundUrl: String
+    category: BladeVisualCategory
+    config: BladeVisualConfig
+    password: String
+    createUser: Int
+    createDept: Int
+    createTime: String
+    updateUser: Int
+    updateTime: String
+    status: String
+}
+
+type BladeVisualCategory{
+    id: ID !
+    bladeVisuals: [BladeVisual]
+    categoryKey: String
+    categoryValue: String
+}
+
+type BladeVisualConfig{
+    id: ID !
+    bladeVisual: [BladeVisual]
+    detail: String
+    component: String
+}
+
+input BladeVisualConfigInput{
+    id: ID
+    detail: String
+    component: String
+}
+
+type BladeVisualPage{
+    totalElements: Int
+    totalPages: Int
+    number: Int
+    size: Int
+    content: [BladeVisual]
+}

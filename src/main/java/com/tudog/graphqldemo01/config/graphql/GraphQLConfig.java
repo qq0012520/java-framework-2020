@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
-public class GraphQLConfig {
+class GraphQLConfig {
 
     private static String schemaLocationPattern = "**/*.graphqls";
 
@@ -39,7 +39,7 @@ public class GraphQLConfig {
      * 所有但是通过@Bean注入容器的话就可以解决这个问题
      */
     @Bean
-    GraphQLResolver<Void> PlaceHolderResolver(){
+    GraphQLResolver<String> PlaceHolderResolver(){
         return new PlaceHolderResolver();
     }
 

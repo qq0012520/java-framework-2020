@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import org.springframework.util.StringUtils;
 
-public class GraphQLSchemaMerger {
+class GraphQLSchemaMerger {
     private static final String ANY_SPACE_REGEX = "\\s+";
 
     private static final String QUERY_BLOCK_START_PART = "type " + GraphQLProcessorSuffix.QUERY + "{";
