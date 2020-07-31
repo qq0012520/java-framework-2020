@@ -3,6 +3,7 @@ package com.tudog.graphqldemo01.config.graphql;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -31,22 +32,25 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Configuration
-class GraphQLAPIPreprocessor{
+public class GraphQLAPIPreprocessor{
     /**
      * GraphQL api 根路径
      */
     public static final String GRAPHQL_API_RESOLVER_ROOT_PACKAGE = "com.tudog.graphqldemo01.api";
 
+    private GraphApiClassLoader apiLoader = new GraphApiClassLoader();            
+        	    
     @Bean
-    static BeanDefinitionRegistryPostProcessor graphAPIBeanRegister(){
+    BeanDefinitionRegistryPostProcessor graphApiBeanRegister(){
         return new BeanDefinitionRegistryPostProcessor(){
+
 			@Override
-			public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-				
-			}
+			public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {}
+
 			@Override
 			public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-                List<Class<?>> graphApiClasses = equipGraphApiClasses();
+                System.out.println("======================== postProcessBeanDefinitionRegistry ===================");
+				List<Class<?>> graphApiClasses = equipGraphApiClasses();
                 for (Class<?> apiClass : graphApiClasses) {
                     BeanDefinition beanDefinition = BeanDefinitionBuilder
                         .genericBeanDefinition(apiClass)
@@ -54,9 +58,11 @@ class GraphQLAPIPreprocessor{
                     String beanSimpleName = StringUtils.uncapitalize(apiClass.getSimpleName());
                     registry.registerBeanDefinition(beanSimpleName, beanDefinition);
                 }
-            }
+			}
         };
     }
+
+    	
 
     @SuppressWarnings({ "unchecked" })
     private static class GraphQlApiClassCanner extends AbstractScanner {
@@ -67,7 +73,7 @@ class GraphQLAPIPreprocessor{
         }
     }
 
-    private static List<Class<?>> equipGraphApiClasses(){
+    private List<Class<?>> equipGraphApiClasses(){
         Reflections reflections = new Reflections(GRAPHQL_API_RESOLVER_ROOT_PACKAGE,new GraphQlApiClassCanner());
         Set<String> graphApiClassNames = reflections.getStore()
             .values(GraphQlApiClassCanner.class.getSimpleName());
@@ -82,7 +88,7 @@ class GraphQLAPIPreprocessor{
         return graphApiClasses;
     }
 
-    private static Class<?> modifyClass(String fullClassName) {
+    private Class<?> modifyClass(String fullClassName) {
         try{
             String className = extractSimpleClassName(fullClassName);
             String classNameUncap = StringUtils.uncapitalize(className);
@@ -91,14 +97,16 @@ class GraphQLAPIPreprocessor{
             CtMethod newMethod = CtNewMethod.make("public " + fullClassName + " " + classNameUncap
                     + "(){" + "return this;" + "}", resolverClass);
             resolverClass.addMethod(newMethod);
-            String loadClassName = fullClassName + "Loader";
-            CtClass loaderClassCt = classPool.makeClass(loadClassName);
-            byte[] classBytes =  loaderClassCt.toBytecode();
-            GraphApiClassLoader apiLoader = new GraphApiClassLoader();
-            Class<?> loaderClass = apiLoader.realDefineClass(loadClassName, classBytes);
-            Lookup lookup = MethodHandles.lookup();
-            Lookup prvlookup = MethodHandles.privateLookupIn(loaderClass, lookup);
-            Class<?> finalClass = resolverClass.toClass(prvlookup);
+            // String loadClassName = fullClassName + "Loader";
+            // CtClass loaderClassCt = classPool.makeClass(loadClassName);
+            // byte[] classBytes =  loaderClassCt.toBytecode();
+            // Class<?> loaderClass = apiLoader.realDefineClass(loadClassName, classBytes);
+
+            // Lookup lookup = MethodHandles.lookup();
+            // Lookup prvlookup = MethodHandles.privateLookupIn(loaderClass, lookup);
+            // Class<?> finalClass = resolverClass.toClass(prvlookup);
+            Class<?> finalClass = resolverClass.toClass();
+            System.out.println("finalClass " + finalClass);
             return finalClass;
         }catch(Exception e){
             log.error("Error with creating boilerplate methods. Error message : " + e.getMessage());
@@ -108,9 +116,10 @@ class GraphQLAPIPreprocessor{
         return null;
     }
 
-    private static String extractSimpleClassName(String fullClassName){
+    private String extractSimpleClassName(String fullClassName){
         String lastStr = StringUtils.getFilenameExtension(fullClassName);
         return lastStr;
     }
+
 
 }

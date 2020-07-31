@@ -39,13 +39,15 @@ class GraphQLConfig {
      * 所有但是通过@Bean注入容器的话就可以解决这个问题
      */
     @Bean
-    GraphQLResolver<String> PlaceHolderResolver(){
+    GraphQLResolver<Void> PlaceHolderResolver(){
         return new PlaceHolderResolver();
     }
 
     @Bean
     SchemaStringProvider mySchemaProvider() {
+        System.out.println("======================== GraphQL schemas processing ===================");
         log.info("GraphQL schemas processing...");
+        System.out.println("resovles " + graphResolvers);
         printReflectiveMethods();
         return new SchemaStringProvider() {
             @Override

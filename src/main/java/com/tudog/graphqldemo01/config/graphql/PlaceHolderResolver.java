@@ -1,10 +1,10 @@
 package com.tudog.graphqldemo01.config.graphql;
 
-import graphql.kickstart.tools.GraphQLResolver;
+import graphql.kickstart.tools.GraphQLQueryResolver;
 
 /**
  * 一个空实现的GraphQL解析器
  */
-class PlaceHolderResolver implements GraphQLResolver<String>{
+public class PlaceHolderResolver implements GraphQLQueryResolver{
     
 }

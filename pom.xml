@@ -117,7 +117,8 @@
 		</dependency>
 	</dependencies>
 
-	<build>
+	<build> 
+		<finalName>graphql-backend</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

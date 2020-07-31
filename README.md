@@ -1,7 +1,58 @@
 # java-framework-2020
 Java web framework with all the new techs and features in 2020
 
-[toc]
+- [java-framework-2020](#java-framework-2020)
+- [Spring Boot 相关](#spring-boot-相关)
+  - [日志输出](#日志输出)
+- [Spring Data 相关](#spring-data-相关)
+  - [方法名推断查询：](#方法名推断查询)
+    - [一些示例](#一些示例)
+    - [属性表达式](#属性表达式)
+    - [分页、排序处理](#分页排序处理)
+  - [Spring Data JPA相关](#spring-data-jpa相关)
+    - [方法名称推断SQL查询关键字SQL映射表](#方法名称推断sql查询关键字sql映射表)
+    - [使用 @Query 自定义查询](#使用-query-自定义查询)
+    - [提取实体关联数据](#提取实体关联数据)
+    - [投影查询](#投影查询)
+      - [基于接口的投影查询](#基于接口的投影查询)
+      - [基于类的投影查询（DTO对象）](#基于类的投影查询dto对象)
+      - [动态投影](#动态投影)
+    - [事务](#事务)
+    - [更多](#更多)
+- [Spring Security 相关](#spring-security-相关)
+  - [Spring Security 登录认证](#spring-security-登录认证)
+    - [1.登录表单](#1登录表单)
+    - [2.登录控制器](#2登录控制器)
+  - [TODO待完善功能](#todo待完善功能)
+
+# Spring Boot 相关
+## 日志输出
+日志输入目前使用Spring Boot的默认配置。  
+在默认配置下：  
+1.) 使用Logback日志引擎  
+2.) 日志输出格式：  
+* 默认输出格式如下
+```
+2019-03-05 10:57:51.112  INFO 45469 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/7.0.52
+2019-03-05 10:57:51.253  INFO 45469 --- [ost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2019-03-05 10:57:51.253  INFO 45469 --- [ost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1358 ms
+2019-03-05 10:57:51.698  INFO 45469 --- [ost-startStop-1] o.s.b.c.e.ServletRegistrationBean        : Mapping servlet: 'dispatcherServlet' to [/]
+2019-03-05 10:57:51.702  INFO 45469 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+
+```
+* 日期和时间：精确到毫秒   
+* 日志级别：包含：ERROR,WARN,INFO,DEBUG,TRACE
+* 进程ID  
+* 一个 `---` 分隔符来表示日志实际信息的开始
+* 线程名称：用方括号包裹
+* Logger 名称：通常用类名表示
+* 日志信息
+
+3.) 默认情况下日志只会输出到控制台，可以通过指定 `logging.file.name` 或者
+`logging.file.path` 参数来让日志输出到文件。比如可用下面参数指定：  
+```java -jar app.jar --logging.file.path=d:\logpath\```   
+&emsp;&emsp;日志文件会在达到10MB后进行翻转，可用 `logging.file.max-size` 参数来设置。默认保留过去7天的日志文件，可用 `logging.file.max-history` 参数来设置。
+总日志文件大小可通过参数 `logging.file.total-size-cap` 来设置，当总日志大小超过该限制，会删除日志文件。`logging.file.clean-history-on-start` 参数用来设置应用启动时自动清除日志文件。
 
 # Spring Data 相关
 
