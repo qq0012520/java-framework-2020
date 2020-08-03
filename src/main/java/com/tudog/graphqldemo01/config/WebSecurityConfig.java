@@ -61,7 +61,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
       web.ignoring()
          .antMatchers(HttpMethod.OPTIONS, "/**")
          .antMatchers(
-            "/",
+            "/**",
             "/*.html",
             "/**/favicon.ico",
             "/**/*.html",
@@ -74,7 +74,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
    @Override
    protected void configure(HttpSecurity httpSecurity) throws Exception {
-      httpSecurity.securityContext().disable(); // Temporarily disable security
+      httpSecurity.cors().disable().authorizeRequests().anyRequest().permitAll(); // Temporarily disable security
       // .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
       // .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
       // .formLogin().successHandler(webAuthenticationSuccessHandle).failureHandler(webAuthenticationFailureHandler).permitAll()

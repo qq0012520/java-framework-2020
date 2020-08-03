@@ -1,7 +1,6 @@
 package com.tudog.graphqldemo01.config.graphql;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 import com.tudog.graphqldemo01.tools.ClassPathSchemaStringProvider;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
 
 import graphql.kickstart.servlet.apollo.ApolloScalars;
 import graphql.kickstart.tools.GraphQLResolver;
@@ -38,8 +36,8 @@ class GraphQLConfig {
      * 这个注解会先于我们注入自己的解析器之前判断
      * 所有但是通过@Bean注入容器的话就可以解决这个问题
      */
-    @Bean
-    GraphQLResolver<Void> PlaceHolderResolver(){
+    @Bean(name = "placeHolderResolver")
+    GraphQLResolver<String> PlaceHolderResolver(){
         return new PlaceHolderResolver();
     }
 
@@ -47,19 +45,18 @@ class GraphQLConfig {
     SchemaStringProvider mySchemaProvider() {
         System.out.println("======================== GraphQL schemas processing ===================");
         log.info("GraphQL schemas processing...");
-        System.out.println("resovles " + graphResolvers);
         printReflectiveMethods();
         return new SchemaStringProvider() {
             @Override
-                public List<String> schemaStrings() throws IOException {
-                    SchemaStringProvider classpathSchemaProvider = new ClassPathSchemaStringProvider(applicationContext,
-                            schemaLocationPattern);
-                    List<String> schemas = classpathSchemaProvider.schemaStrings();
-                    GraphQLSchemaMerger merger = new GraphQLSchemaMerger(schemas);
-                    String rootSchema = merger.makeRootSchema();
-                    schemas.add(rootSchema);
-                    return schemas;
-                }
+            public List<String> schemaStrings() throws IOException {
+                SchemaStringProvider classpathSchemaProvider = new ClassPathSchemaStringProvider(applicationContext,
+                        schemaLocationPattern);
+                List<String> schemas = classpathSchemaProvider.schemaStrings();
+                GraphQLSchemaMerger merger = new GraphQLSchemaMerger(schemas);
+                String rootSchema = merger.makeRootSchema();
+                schemas.add(rootSchema);
+                return schemas;
+            }
         };
     }
 
@@ -69,20 +66,20 @@ class GraphQLConfig {
     }
 
     private void printReflectiveMethods(){
-        for (GraphQLResolver<Void> res : graphResolvers) {
-            String className = res.getClass().getSimpleName();
-            String classNameUncap = StringUtils.uncapitalize(className);
-            Method[] methods = res.getClass().getMethods();
-            boolean hasReflectiveMethod = false;
-            for (Method method : methods) {
-                if(classNameUncap.equals(method.getName())){
-                    hasReflectiveMethod = true;
-                    log.info("Checked reflective method : " + method.toString());
-                }
-            }
-            if(!hasReflectiveMethod){
-                log.warn("Reflective method doesn't exists for " + res.getClass().getName());
-            }
-        }
+        // for (GraphQLResolver<Void> res : graphResolvers) {
+        //     String className = res.getClass().getSimpleName();
+        //     String classNameUncap = StringUtils.uncapitalize(className);
+        //     Method[] methods = res.getClass().getMethods();
+        //     boolean hasReflectiveMethod = false;
+        //     for (Method method : methods) {
+        //         if(classNameUncap.equals(method.getName())){
+        //             hasReflectiveMethod = true;
+        //             log.info("Checked reflective method : " + method.toString());
+        //         }
+        //     }
+        //     if(!hasReflectiveMethod){
+        //         log.warn("Reflective method doesn't exists for " + res.getClass().getName());
+        //     }
+        // }
     }
 }

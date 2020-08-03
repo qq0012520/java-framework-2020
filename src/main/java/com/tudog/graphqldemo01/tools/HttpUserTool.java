@@ -26,7 +26,12 @@ public class HttpUserTool {
      * 获取登录用户名
      */
     public static String getName(){
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println(SecurityContextHolder.getContext().getAuthentication());
+        if(SecurityContextHolder.getContext().getAuthentication() == null){
+            return "nobody";
+        }else{
+            return SecurityContextHolder.getContext().getAuthentication().getName();
+        }
     }
 
     /**

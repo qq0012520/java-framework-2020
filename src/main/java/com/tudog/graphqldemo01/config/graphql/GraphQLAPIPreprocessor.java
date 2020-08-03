@@ -3,10 +3,11 @@ package com.tudog.graphqldemo01.config.graphql;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import com.google.common.graph.Graph;
 
 import org.reflections.Reflections;
 import org.reflections.Store;
@@ -33,23 +34,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Configuration
 public class GraphQLAPIPreprocessor{
-    /**
-     * GraphQL api 根路径
-     */
-    public static final String GRAPHQL_API_RESOLVER_ROOT_PACKAGE = "com.tudog.graphqldemo01.api";
-
-    private GraphApiClassLoader apiLoader = new GraphApiClassLoader();            
-        	    
+   
     @Bean
     BeanDefinitionRegistryPostProcessor graphApiBeanRegister(){
         return new BeanDefinitionRegistryPostProcessor(){
 
 			@Override
-			public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {}
+			public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+
+            }
 
 			@Override
 			public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
                 System.out.println("======================== postProcessBeanDefinitionRegistry ===================");
+                registry.removeBeanDefinition("placeHolderResolver");
 				List<Class<?>> graphApiClasses = equipGraphApiClasses();
                 for (Class<?> apiClass : graphApiClasses) {
                     BeanDefinition beanDefinition = BeanDefinitionBuilder
@@ -62,7 +60,6 @@ public class GraphQLAPIPreprocessor{
         };
     }
 
-    	
 
     @SuppressWarnings({ "unchecked" })
     private static class GraphQlApiClassCanner extends AbstractScanner {
@@ -74,11 +71,11 @@ public class GraphQLAPIPreprocessor{
     }
 
     private List<Class<?>> equipGraphApiClasses(){
-        Reflections reflections = new Reflections(GRAPHQL_API_RESOLVER_ROOT_PACKAGE,new GraphQlApiClassCanner());
+        Reflections reflections = new Reflections(GraphQLConstants.GRAPHQL_API_RESOLVER_ROOT_PACKAGE,new GraphQlApiClassCanner());
         Set<String> graphApiClassNames = reflections.getStore()
             .values(GraphQlApiClassCanner.class.getSimpleName());
         if(graphApiClassNames.size() == 0){
-            log.error("Can't find any resolver classes in package: " + GRAPHQL_API_RESOLVER_ROOT_PACKAGE);
+            log.error("Can't find any resolver classes in package: " + GraphQLConstants.GRAPHQL_API_RESOLVER_ROOT_PACKAGE);
             return Collections.emptyList();
         }
         List<Class<?>> graphApiClasses = new ArrayList<>();
@@ -94,19 +91,19 @@ public class GraphQLAPIPreprocessor{
             String classNameUncap = StringUtils.uncapitalize(className);
             ClassPool classPool = ClassPool.getDefault();
             CtClass resolverClass = classPool.get(fullClassName);
-            CtMethod newMethod = CtNewMethod.make("public " + fullClassName + " " + classNameUncap
-                    + "(){" + "return this;" + "}", resolverClass);
-            resolverClass.addMethod(newMethod);
-            // String loadClassName = fullClassName + "Loader";
-            // CtClass loaderClassCt = classPool.makeClass(loadClassName);
-            // byte[] classBytes =  loaderClassCt.toBytecode();
-            // Class<?> loaderClass = apiLoader.realDefineClass(loadClassName, classBytes);
+            String proxyClassName = fullClassName + GraphQLConstants.GRAPHQL_API_PROXY_SUFFIX;
+            CtClass proxyClass = classPool.makeClass(proxyClassName);
 
-            // Lookup lookup = MethodHandles.lookup();
-            // Lookup prvlookup = MethodHandles.privateLookupIn(loaderClass, lookup);
-            // Class<?> finalClass = resolverClass.toClass(prvlookup);
-            Class<?> finalClass = resolverClass.toClass();
-            System.out.println("finalClass " + finalClass);
+            proxyClass.setSuperclass(resolverClass);
+
+            CtMethod newMethod = CtNewMethod.make("public " + fullClassName + " " + classNameUncap
+                    + "(){" + "return this;" + "}", proxyClass);
+            proxyClass.addMethod(newMethod);
+            
+            Class<?> parentClass = Class.forName(fullClassName);
+            Lookup lookup = MethodHandles.lookup();
+            Lookup prvlookup = MethodHandles.privateLookupIn(parentClass, lookup);
+            Class<?> finalClass = proxyClass.toClass(prvlookup);
             return finalClass;
         }catch(Exception e){
             log.error("Error with creating boilerplate methods. Error message : " + e.getMessage());
